@@ -17,33 +17,55 @@ namespace si {
     using std::tuple<Types ...>::tuple;
     using types = types_holder<Types ...>;
 
-    static const size_t number_of_fields = sizeof ... (Types);
-
-    /** Container type
-     *
-     */
-    /*
-    class container_type : public Descriptor {
-
-      container_type() {
-
-      }
-    };
-    */
-
+    static size_t const number_of_fields = sizeof ... (Types);
 
     /** Iterator class
      *
      */
     template<class ... Iterators>
-    class iterator : public Descriptor, std::tuple<Iterators ...> {
+    class iterator : public std::tuple<Iterators ...> {
 
     public:
 
-      // Inherit constructors
-      using std::tuple<Iterators ...>::tuple;
-
+      using class_type = iterator<Iterators...>;
       using base_data_type = std::tuple<Iterators ...>;
+      
+      /** Container type
+       *
+       */
+      class container_type : public Descriptor {
+
+      private:
+      
+	class_type &iter;
+
+      public:
+	
+	container_type(class_type &it) : iter{it} { };
+
+	/// Get an element from a container type
+	template<size_t Index> friend
+	typename tuple_element<Index, Types ...>::type& get_field(container_type& ct ) {
+	  return *std::get<Index>(ct.iter);
+	}
+
+      };
+
+      // Similar constructors to those of std::tuple
+      template<class ... Args>
+      iterator( Args ... args ) : m_container{*this}, std::tuple<Iterators ...>(args ...) { };
+
+      /// Access operator
+      container_type* operator->() {
+
+	return &m_container;
+      }
+
+      /// Access operator
+      container_type const* operator->() const {
+
+	return &m_container;
+      }
 
       /// Increment operator
       iterator<Iterators ...>& operator++() {
@@ -84,39 +106,43 @@ namespace si {
       /// Comparison operator (equality)
       template<class Iterator>
       typename std::enable_if<(number_of_fields == Iterator::number_of_fields), bool>::type
-      operator==(const Iterator& other) const {
+      operator==(Iterator const& other) const {
 
 	if constexpr (number_of_fields == 0)
 	   return true;
 	else
-	  return std::get<0>(*static_cast<base_data_type const*>(this)) == std::get<0>(*static_cast<typename Iterator::base_data_type const*>(&other));
+	  return std::get<0>(*this) == std::get<0>(other);
       }
 
       /// Comparison operator (inequality)
       template<class Iterator>
       typename std::enable_if<(number_of_fields == Iterator::number_of_fields), bool>::type
-      operator!=(const Iterator& other) const {
+      operator!=(Iterator const& other) const {
 
 	if constexpr (number_of_fields == 0)
 	   return true;
 	else
-	  return std::get<0>(*static_cast<base_data_type const*>(this)) != std::get<0>(*static_cast<typename Iterator::base_data_type const*>(&other));
+	  return std::get<0>(*this) != std::get<0>(other);
       }
-      
+
+    protected:
+
+      container_type m_container;
+
     private:
 
       /// Implementation of the function to access the next element
       template<size_t ... I>
-      void next_impl(std::index_sequence<I ...>) {
+      inline void next_impl(std::index_sequence<I ...>) {
 
-	(++std::get<I>(*static_cast<base_data_type*>(this)), ...);
+	(++std::get<I>(*this), ...);
       }
 
       /// Implementation of the function to access the previous element
       template<size_t ... I>
-      void prev_impl(std::index_sequence<I ...>) {
+      inline void prev_impl(std::index_sequence<I ...>) {
 
-	(--std::get<I>(*static_cast<base_data_type*>(this)), ...);
+	(--std::get<I>(*this), ...);
       }
     };
 
@@ -139,16 +165,10 @@ namespace si {
 
   /// Get an element from a constant data object
   template<size_t Index, typename Descriptor, typename ... Types>
-  const typename tuple_element<Index, Types ...>::type& get_field(const data_object<Descriptor, Types ...>& t ) {
+  typename tuple_element<Index, Types ...>::type const& get_field(data_object<Descriptor, Types ...> const& t ) {
     return std::get<Index>(t);
   }
 
-  /// Get an element from an iterator
-  template<size_t Index, typename Descriptor, typename ... Types, typename ... Iterators>
-  typename tuple_element<Index, Types ...>::type&
-  get_field(typename data_object<Descriptor, Types ...>::template iterator<Iterators ...>& it ) {
-    return *std::get<Index>(*static_cast<typename data_object<Descriptor, Types ...>::template iterator<Iterators ...>*>(it));
-  }
 }
 
 #endif // DATA_OBJECT_HPP

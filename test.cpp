@@ -12,10 +12,12 @@ int main() {
 
   std::cout << va.size() << std::endl;
 
-  for ( auto it = va.begin(); it != va.end(); ++it );
-
   auto it = va.begin();
   auto end = va.end();
+
+  it->x() = 1000;
+
+  std::cout << it->x() << std::endl;
 
   ++it;
   --it;
@@ -23,6 +25,8 @@ int main() {
   it--;
 
   it == end;
+
+  for ( auto it = va.begin(); it != va.end(); ++it );
 
   return 0;
 }
