@@ -36,11 +36,13 @@ namespace si {
       class container_type : public Descriptor {
 
       private:
-      
+
+	/// Link to the iterator instance
 	class_type &iter;
 
       public:
-	
+
+	/// Construct the class from the iterator instance
 	container_type(class_type &it) : iter{it} { };
 
 	/// Get an element from a container type
@@ -59,6 +61,18 @@ namespace si {
       container_type* operator->() {
 
 	return &m_container;
+      }
+
+      /// Dereference operator
+      container_type& operator*() {
+
+	return m_container;
+      }
+
+      /// Dereference operator (constant)
+      container_type const& operator*() const {
+
+	return m_container;
       }
 
       /// Access operator
@@ -127,6 +141,7 @@ namespace si {
 
     protected:
 
+      /// Container instance
       container_type m_container;
 
     private:
