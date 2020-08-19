@@ -15,8 +15,9 @@ int main() {
   auto it = va.begin();
   auto end = va.end();
 
-  it->x() = 1000;
   std::cout << "Should be equal" << std::endl;
+  it->x() = 1000;
+  (*it).x() = 1000;
   std::cout << it->x() << std::endl;
   std::cout << va.begin()->x() << std::endl;
   std::cout << "end check" << std::endl;

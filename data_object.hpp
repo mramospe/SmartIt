@@ -7,19 +7,28 @@
 
 #include "utils.hpp"
 
+#include <iostream>
+
 namespace si {
 
-  template <typename Descriptor, typename ... Types>
-  class data_object : public std::tuple<Types ...> {
+  // Forward declaration of access functions
+  template<size_t Index, class Object, typename ... Types>
+  typename tuple_element<Index, Types ...>::type&
+  get_field(Object &obj);
+
+  template<size_t Index, class Object, typename ... Types>
+  typename tuple_element<Index, Types ...>::type const&
+  get_field(Object const &obj);
+
+  /** Data object
+   *
+   */
+  template <template <class> class Prototype, typename ... Types>
+  class data_object {
 
   public:
-    
-    using std::tuple<Types ...>::tuple;
-    using types = types_holder<Types ...>;
 
-    static size_t const number_of_fields = sizeof ... (Types);
-
-    /** Iterator class
+    /** Iterator type
      *
      */
     template<class ... Iterators>
@@ -29,33 +38,44 @@ namespace si {
 
       using class_type = iterator<Iterators...>;
       using base_data_type = std::tuple<Iterators ...>;
+      static size_t const number_of_fields = sizeof ... (Types);
       
       /** Container type
        *
        */
-      class container_type : public Descriptor {
+      class __base_container_type {
 
       private:
 
 	/// Link to the iterator instance
-	class_type &iter;
+	class_type &m_iter;
 
       public:
 
+	static size_t const number_of_fields = sizeof ... (Types);
+
 	/// Construct the class from the iterator instance
-	container_type(class_type &it) : iter{it} { };
+	__base_container_type(class_type &it) : m_iter{it} { }
 
 	/// Get an element from a container type
 	template<size_t Index> friend
-	typename tuple_element<Index, Types ...>::type& get_field(container_type& ct ) {
-	  return *std::get<Index>(ct.iter);
+	typename tuple_element<Index, Types ...>::type& get_field(__base_container_type& ct) {
+	  return *std::get<Index>(ct.m_iter);
 	}
 
+	/// Get an element from a container type (constant)
+	template<size_t Index> friend
+	typename tuple_element<Index, Types ...>::type const& get_field(__base_container_type const& ct) {
+	  return *std::get<Index>(ct.m_iter);
+	}
       };
+
+      /// Declare the container type
+      using container_type = Prototype<__base_container_type>;
 
       // Similar constructors to those of std::tuple
       template<class ... Args>
-      iterator( Args ... args ) : m_container{*this}, std::tuple<Iterators ...>(args ...) { };
+      iterator( Args ... args ) : m_container{*this}, std::tuple<Iterators ...>(args ...) { }
 
       /// Access operator
       container_type* operator->() {
@@ -161,29 +181,43 @@ namespace si {
       }
     };
 
-    // Container types
-    template<size_t N>
-    using array_type = std::tuple<std::array<Types, N> ...>;
-    using vector_type = std::tuple<std::vector<Types> ...>;
+    /** Value type
+     *
+     */
+    class __base_value_type : public std::tuple<Types ...> {
 
-    // Iterator types
-    template<size_t N>
-    using array_iterator_type = iterator<typename std::array<Types, N>::iterator ...>;
-    using vector_iterator_type = iterator<typename std::vector<Types>::iterator ...>;
+    public:
+
+      // Container types
+      template<size_t N>
+      using array_type = std::tuple<std::array<Types, N> ...>;
+      using vector_type = std::tuple<std::vector<Types> ...>;
+
+      // Iterator types
+      template<size_t N>
+      using array_iterator_type = iterator<typename std::array<Types, N>::iterator ...>;
+      using vector_iterator_type = iterator<typename std::vector<Types>::iterator ...>;
+
+      static size_t const number_of_fields = sizeof ... (Types);
+      using std::tuple<Types ...>::tuple;
+      using types = types_holder<Types ...>;
+
+      /// Get an element from a data object
+      template<size_t Index> friend
+      typename tuple_element<Index, Types ...>::type& get_field(__base_value_type& v) {
+	return std::get<Index>(v);
+      }
+
+      /// Get an element from a constant data object
+      template<size_t Index> friend
+      typename tuple_element<Index, Types ...>::type const& get_field(__base_value_type const& v) {
+	return std::get<Index>(v);
+      }
+    };
+
+    /// Declare the value type
+    using value_type = Prototype<__base_value_type>;
   };
-
-  /// Get an element from a data object
-  template<size_t Index, typename Descriptor, typename ... Types>
-  typename tuple_element<Index, Types ...>::type& get_field(data_object<Descriptor, Types ...>& t ) {
-    return std::get<Index>(t);
-  }
-
-  /// Get an element from a constant data object
-  template<size_t Index, typename Descriptor, typename ... Types>
-  typename tuple_element<Index, Types ...>::type const& get_field(data_object<Descriptor, Types ...> const& t ) {
-    return std::get<Index>(t);
-  }
-
 }
 
 #endif // DATA_OBJECT_HPP
