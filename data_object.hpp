@@ -4,10 +4,9 @@
 #include <array>
 #include <vector>
 #include <tuple>
+#include <type_traits>
 
 #include "utils.hpp"
-
-#include <iostream>
 
 namespace si {
 
@@ -28,6 +27,10 @@ namespace si {
 
   public:
 
+    using data_object_type = data_object<Prototype, Types ...>;
+    using types = types_holder<Types ...>;
+    static size_t const number_of_fields = sizeof ... (Types);
+
     /** Iterator type
      *
      */
@@ -36,9 +39,14 @@ namespace si {
 
     public:
 
-      using class_type = iterator<Iterators...>;
-      using base_data_type = std::tuple<Iterators ...>;
-      static size_t const number_of_fields = sizeof ... (Types);
+      /// Iterator type
+      using iterator_type = iterator<Iterators...>;
+      /// Data object type
+      using data_object_type = data_object::data_object_type;
+      /// Types of the fields
+      using types = data_object::types;
+      /// Number of fields
+      static const auto number_of_fields = data_object::number_of_fields;
       
       /** Container type
        *
@@ -48,14 +56,19 @@ namespace si {
       private:
 
 	/// Link to the iterator instance
-	class_type &m_iter;
+	iterator_type &m_iter;
 
       public:
 
-	static size_t const number_of_fields = sizeof ... (Types);
+	/// Data object type
+	using data_object_type = data_object::data_object_type;
+	/// Types of the fields
+	using types = data_object::types;
+	/// Number of fields
+	static const auto number_of_fields = data_object::number_of_fields;
 
 	/// Construct the class from the iterator instance
-	__base_container_type(class_type &it) : m_iter{it} { }
+	__base_container_type(iterator_type &it) : m_iter{it} { }
 
 	/// Get an element from a container type
 	template<size_t Index> friend
@@ -188,6 +201,13 @@ namespace si {
 
     public:
 
+      /// Data object type
+      using data_object_type = data_object::data_object_type;
+      /// Types of the fields
+      using types = data_object::types;
+      /// Number of fields
+      static const auto number_of_fields = data_object::number_of_fields;
+
       // Container types
       template<size_t N>
       using array_type = std::tuple<std::array<Types, N> ...>;
@@ -198,9 +218,8 @@ namespace si {
       using array_iterator_type = iterator<typename std::array<Types, N>::iterator ...>;
       using vector_iterator_type = iterator<typename std::vector<Types>::iterator ...>;
 
-      static size_t const number_of_fields = sizeof ... (Types);
+      /// Inherit constructors
       using std::tuple<Types ...>::tuple;
-      using types = types_holder<Types ...>;
 
       /// Get an element from a data object
       template<size_t Index> friend
@@ -217,6 +236,15 @@ namespace si {
 
     /// Declare the value type
     using value_type = Prototype<__base_value_type>;
+  };
+
+  /// Determine the value type of two template arguments to a prototype class
+  template<class T1, class T2>
+  struct common_value_type {
+    using type = typename std::enable_if<
+      std::is_same<typename T1::data_object_type::value_type,
+		   typename T2::data_object_type::value_type>::value,
+      typename T1::data_object_type::value_type>::type;
   };
 }
 

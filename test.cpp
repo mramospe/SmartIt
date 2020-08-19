@@ -36,7 +36,13 @@ int main() {
 
   auto c = *it;
 
-  std::cout << c.y() << std::endl;
+  std::cout << c.x() << " " << c.y() << " " << c.z() << std::endl;
+
+  std::cout << si::dot(c, c) << std::endl;
+
+  auto r = si::cross(c, c);
+
+  std::cout << r.x() << " " << r.y() << " " << r.z() << std::endl;
 
   return 0;
 }
