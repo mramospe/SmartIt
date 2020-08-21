@@ -4,11 +4,11 @@
 
 int main() {
 
-  si::point3d<double> a{1, 2, 3};
+  si::point_3d<double> a{1, 2, 3};
 
   std::cout << a.x() << std::endl;
 
-  si::vector<si::point3d<double>> va(10);
+  si::vector<si::point_3d<double>> va(10);
 
   std::cout << va.size() << std::endl;
 
@@ -43,6 +43,20 @@ int main() {
   auto r = si::cross(c, c);
 
   std::cout << r.x() << " " << r.y() << " " << r.z() << std::endl;
+
+  si::point_with_vector_3d<float> pv;
+
+  pv.point().x() = 2347;
+
+  std::cout << pv.point().x() << std::endl;
+
+  si::vector<si::point_with_vector_3d<float>> v_pv(10);
+
+  for ( auto it = v_pv.begin(); it != v_pv.end(); ++it )
+    it->point().x() = 11;
+
+  for ( auto it = v_pv.begin(); it != v_pv.end(); ++it )
+    std::cout << it->point().x() << std::endl;
 
   return 0;
 }

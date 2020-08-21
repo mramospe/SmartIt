@@ -3,17 +3,9 @@
 
 #include <vector>
 
-#include "utils.hpp"
+#include "container_types.hpp"
 
 namespace si {
-
-  namespace core {
-    /// Create a tuple of vectors with the given size
-    template <class ... Types>
-    constexpr std::tuple<std::vector<Types> ...> make_vector_tuple(size_t n, types_holder<Types ...>) {
-      return {std::vector<Types>(n) ...};
-    }
-  }
 
   /** Vector class
    *
@@ -23,6 +15,7 @@ namespace si {
 
   public:
 
+    /// Similar to std::vector
     using iterator = typename Object::vector_iterator_type;
 
     /// Default constructor

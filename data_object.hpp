@@ -12,13 +12,11 @@
 namespace si {
 
   // Forward declaration of access functions
-  template<size_t Index, class Object, typename ... Types>
-  typename core::tuple_element<Index, Types ...>::type&
-  get_field(Object &obj);
+  template<class Object>
+  auto& get_field(Object &obj);
 
-  template<size_t Index, class Object, typename ... Types>
-  typename core::tuple_element<Index, Types ...>::type const&
-  get_field(Object const &obj);
+  template<class Object>
+  auto const& get_field(Object const &obj);
 
   /** Data object
    *
@@ -73,13 +71,13 @@ namespace si {
 
 	/// Get an element from a container type
 	template<size_t Index> friend
-	typename core::tuple_element<Index, Types ...>::type& get_field(__base_container_type& ct) {
+	auto& get_field(__base_container_type& ct) {
 	  return *std::get<Index>(ct.m_iter);
 	}
 
 	/// Get an element from a container type (constant)
 	template<size_t Index> friend
-	typename core::tuple_element<Index, Types ...>::type const& get_field(__base_container_type const& ct) {
+	auto const& get_field(__base_container_type const& ct) {
 	  return *std::get<Index>(ct.m_iter);
 	}
       };
@@ -224,13 +222,13 @@ namespace si {
 
       /// Get an element from a data object
       template<size_t Index> friend
-      typename core::tuple_element<Index, Types ...>::type& get_field(__base_value_type& v) {
+      auto& get_field(__base_value_type& v) {
 	return std::get<Index>(v);
       }
 
       /// Get an element from a constant data object
       template<size_t Index> friend
-      typename core::tuple_element<Index, Types ...>::type const& get_field(__base_value_type const& v) {
+      auto const& get_field(__base_value_type const& v) {
 	return std::get<Index>(v);
       }
     };

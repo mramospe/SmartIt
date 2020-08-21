@@ -1,10 +1,16 @@
+#ifndef CONTAINER_TYPES_HPP
+#define CONTAINER_TYPES_HPP
+
 #include <array>
+#include <type_traits>
 #include <vector>
 
-#include "array.hpp"
-#include "vector.hpp"
+#include "utils.hpp"
 
 namespace si {
+
+  template<class Object>
+  class vector;
 
   namespace core {
 
@@ -33,10 +39,17 @@ namespace si {
     };
 
     template<class Type>
-    struct vector_t<Type, typename std::enable_if_t<!std::is_arithmetic<Type>::value>::type> {
+    struct vector_t <Type, typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
       using type = vector<Type>;
       using iterator = typename type::iterator;
     };
 
+    /// Create a tuple of vectors with the given size
+    template <class ... Types>
+    constexpr std::tuple<typename vector_t<Types>::type ...> make_vector_tuple(size_t n, types_holder<Types ...>) {
+      return {typename vector_t<Types>::type(n) ...};
+    }
   }
 }
+
+#endif
