@@ -6,17 +6,18 @@
 #include <tuple>
 #include <type_traits>
 
+#include "container_types.hpp"
 #include "utils.hpp"
 
 namespace si {
 
   // Forward declaration of access functions
   template<size_t Index, class Object, typename ... Types>
-  typename tuple_element<Index, Types ...>::type&
+  typename core::tuple_element<Index, Types ...>::type&
   get_field(Object &obj);
 
   template<size_t Index, class Object, typename ... Types>
-  typename tuple_element<Index, Types ...>::type const&
+  typename core::tuple_element<Index, Types ...>::type const&
   get_field(Object const &obj);
 
   /** Data object
@@ -28,7 +29,7 @@ namespace si {
   public:
 
     using data_object_type = data_object<Prototype, Types ...>;
-    using types = types_holder<Types ...>;
+    using types = core::types_holder<Types ...>;
     static size_t const number_of_fields = sizeof ... (Types);
 
     /** Iterator type
@@ -72,13 +73,13 @@ namespace si {
 
 	/// Get an element from a container type
 	template<size_t Index> friend
-	typename tuple_element<Index, Types ...>::type& get_field(__base_container_type& ct) {
+	typename core::tuple_element<Index, Types ...>::type& get_field(__base_container_type& ct) {
 	  return *std::get<Index>(ct.m_iter);
 	}
 
 	/// Get an element from a container type (constant)
 	template<size_t Index> friend
-	typename tuple_element<Index, Types ...>::type const& get_field(__base_container_type const& ct) {
+	typename core::tuple_element<Index, Types ...>::type const& get_field(__base_container_type const& ct) {
 	  return *std::get<Index>(ct.m_iter);
 	}
       };
@@ -210,26 +211,26 @@ namespace si {
 
       // Container types
       template<size_t N>
-      using array_type = std::tuple<std::array<Types, N> ...>;
-      using vector_type = std::tuple<std::vector<Types> ...>;
+      using array_type = std::tuple<typename core::array_t<Types, N>::type ...>;
+      using vector_type = std::tuple<typename core::vector_t<Types>::type ...>;
 
       // Iterator types
       template<size_t N>
-      using array_iterator_type = iterator<typename std::array<Types, N>::iterator ...>;
-      using vector_iterator_type = iterator<typename std::vector<Types>::iterator ...>;
+      using array_iterator_type = iterator<typename core::array_t<Types, N>::iterator ...>;
+      using vector_iterator_type = iterator<typename core::vector_t<Types>::iterator ...>;
 
       /// Inherit constructors
       using std::tuple<Types ...>::tuple;
 
       /// Get an element from a data object
       template<size_t Index> friend
-      typename tuple_element<Index, Types ...>::type& get_field(__base_value_type& v) {
+      typename core::tuple_element<Index, Types ...>::type& get_field(__base_value_type& v) {
 	return std::get<Index>(v);
       }
 
       /// Get an element from a constant data object
       template<size_t Index> friend
-      typename tuple_element<Index, Types ...>::type const& get_field(__base_value_type const& v) {
+      typename core::tuple_element<Index, Types ...>::type const& get_field(__base_value_type const& v) {
 	return std::get<Index>(v);
       }
     };

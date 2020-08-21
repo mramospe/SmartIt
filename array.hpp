@@ -1,40 +1,26 @@
-#ifndef VECTOR_HPP
-#define VECTOR_HPP
-
-#include <vector>
+#ifndef ARRAY_HPP
+#define ARRAY_HPP
 
 #include "utils.hpp"
 
 namespace si {
 
-  namespace core {
-    /// Create a tuple of vectors with the given size
-    template <class ... Types>
-    constexpr std::tuple<std::vector<Types> ...> make_vector_tuple(size_t n, types_holder<Types ...>) {
-      return {std::vector<Types>(n) ...};
-    }
-  }
-
-  /** Vector class
+  /** Array class
    *
    */
-  template<class Object>
-  class vector : public Object::vector_type {
+  template<class Object, size_t N>
+  class array : public Object::template array_type<N> {
 
   public:
 
-    using iterator = typename Object::vector_iterator_type;
+    using iterator = typename Object::template array_iterator_type<N>;
 
     /// Default constructor
-    vector() { }
-    /// Construct the vector from a size
-    vector(size_t n) : Object::vector_type{core::make_vector_tuple(n, typename Object::types{})} {
-      
-    };
+    array() { }
     /// Destructor
-    ~vector() { }
+    ~array() { }
 
-    /// Get the size of the vector
+    /// Get the size of the array
     size_t size() const {
 
       if constexpr (Object::number_of_fields == 0)
@@ -43,12 +29,12 @@ namespace si {
 	return std::get<0>(*this).size();
     }
 
-    /// Begining of the vector
+    /// Begining of the array
     auto begin() {
       return this->begin_impl(std::make_index_sequence<Object::number_of_fields>{});
     }
 
-    /// End of the vector
+    /// End of the array
     auto end() {
       return this->end_impl(std::make_index_sequence<Object::number_of_fields>{});
     }
@@ -71,4 +57,4 @@ namespace si {
   };
 }
 
-#endif // VECTOR_HPP
+#endif
