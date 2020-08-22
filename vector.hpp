@@ -21,9 +21,7 @@ namespace si {
     /// Default constructor
     vector() { }
     /// Construct the vector from a size
-    vector(size_t n) : Object::vector_type{core::make_vector_tuple(n, typename Object::types{})} {
-      
-    };
+    vector(size_t n) : Object::vector_type{core::make_vector_tuple(n, typename Object::types{})} { };
     /// Destructor
     ~vector() { }
 
@@ -48,7 +46,7 @@ namespace si {
 
   private:
 
-    /// Implementation of the begining function
+    /// Implementation of the begin function
     template<size_t ... I>
     iterator begin_impl(std::index_sequence<I ...>) {
 

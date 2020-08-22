@@ -39,7 +39,9 @@ namespace si {
     public:
 
       /// Iterator type
-      using iterator_type = iterator<Iterators...>;
+      using iterator_type = iterator<Iterators ...>;
+      /// Tuple type
+      using tuple_type = std::tuple<Iterators ...>;
       /// Data object type
       using data_object_type = data_object::data_object_type;
       /// Types of the fields
@@ -52,7 +54,7 @@ namespace si {
        */
       class __base_container_type {
 
-      private:
+      public:
 
 	/// Link to the iterator instance
 	iterator_type &m_iter;
@@ -86,8 +88,24 @@ namespace si {
       using container_type = Prototype<__base_container_type>;
 
       // Similar constructors to those of std::tuple
-      template<class ... Args>
-      iterator( Args ... args ) : m_container{*this}, std::tuple<Iterators ...>(args ...) { }
+      explicit iterator( const Iterators& ... args ) : tuple_type{args ...}, m_container{*this} { }
+
+      /// Constructors for cases with no arguments (default) and with iterators
+      template<class ... UIterators>
+      iterator( UIterators&& ... args ) : tuple_type{args ...}, m_container{*this} { }
+
+      iterator(const iterator& other) : tuple_type(other), m_container{*this} { }
+      iterator(iterator&& other) : tuple_type(other), m_container{*this} { }
+
+      iterator& operator=(const iterator& other) {
+	tuple_type::operator=(other);
+	return *this;
+      }
+
+      iterator& operator=(iterator&& other) {
+	tuple_type::operator=(other);
+	return *this;
+      }
 
       /// Access operator
       container_type* operator->() {
@@ -237,13 +255,13 @@ namespace si {
     using value_type = Prototype<__base_value_type>;
   };
 
-  /// Determine the value type of two template arguments to a prototype class
-  template<class T1, class T2>
+  /// Determine the value type of two or more template arguments to a prototype class
+  template<class First, class ... Last>
   struct common_value_type {
     using type = typename std::enable_if<
-      std::is_same<typename T1::data_object_type::value_type,
-		   typename T2::data_object_type::value_type>::value,
-      typename T1::data_object_type::value_type>::type;
+      (std::is_same<typename First::data_object_type::value_type,
+       typename Last::data_object_type::value_type>::value && ...),
+      typename First::data_object_type::value_type>::type;
   };
 }
 

@@ -52,6 +52,18 @@ int main() {
 
   si::vector<si::point_with_vector_3d<float>> v_pv(10);
 
+  si::vector<si::point_with_vector_3d<float>>::iterator i;
+  i = v_pv.begin();
+
+  auto& cont = v_pv.begin()->point();
+  std::cout << "HERE" << std::endl;
+  cont.x() = 10;
+  *(std::get<0>(cont.m_iter)) = 10;
+  std::cout << *(std::get<0>(cont.m_iter)) << std::endl;
+  std::cout << cont.x() << std::endl;
+
+  return 0;
+
   for ( auto it = v_pv.begin(); it != v_pv.end(); ++it )
     it->point().x() = 11;
 
