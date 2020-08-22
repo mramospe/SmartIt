@@ -1,5 +1,5 @@
-#include "basic_types.hpp"
-#include "vector.hpp"
+#include "smartit/basic_types.hpp"
+#include "smartit/vector.hpp"
 #include <iostream>
 
 int main() {
