@@ -1,4 +1,4 @@
-#include "smartit/basic_types.hpp"
+#include "smartit/types.hpp"
 #include "smartit/vector.hpp"
 #include <iostream>
 
@@ -30,7 +30,7 @@ int main() {
   it == end;
 
   std::cout << "Start printing" << std::endl;
-  for ( auto it = va.begin(); it != va.end(); ++it )
+  for (auto it = va.begin(); it != va.end(); ++it)
     std::cout << it->x() << std::endl;
   std::cout << "End printing" << std::endl;
 
@@ -55,7 +55,7 @@ int main() {
   smit::vector<smit::point_with_vector_3d<float>>::iterator i;
   i = v_pv.begin();
 
-  auto& cont = v_pv.begin()->point();
+  auto &cont = v_pv.begin()->point();
   std::cout << "HERE" << std::endl;
   cont.x() = 10;
   *(std::get<0>(cont.m_iter)) = 10;
@@ -64,10 +64,10 @@ int main() {
 
   return 0;
 
-  for ( auto it = v_pv.begin(); it != v_pv.end(); ++it )
+  for (auto it = v_pv.begin(); it != v_pv.end(); ++it)
     it->point().x() = 11;
 
-  for ( auto it = v_pv.begin(); it != v_pv.end(); ++it )
+  for (auto it = v_pv.begin(); it != v_pv.end(); ++it)
     std::cout << it->point().x() << std::endl;
 
   return 0;
