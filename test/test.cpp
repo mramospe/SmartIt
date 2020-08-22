@@ -4,11 +4,11 @@
 
 int main() {
 
-  si::point_3d<double> a{1, 2, 3};
+  smit::point_3d<double> a{1, 2, 3};
 
   std::cout << a.x() << std::endl;
 
-  si::vector<si::point_3d<double>> va(10);
+  smit::vector<smit::point_3d<double>> va(10);
 
   std::cout << va.size() << std::endl;
 
@@ -38,21 +38,21 @@ int main() {
 
   std::cout << c.x() << " " << c.y() << " " << c.z() << std::endl;
 
-  std::cout << si::dot(c, c) << std::endl;
+  std::cout << smit::dot(c, c) << std::endl;
 
-  auto r = si::cross(c, c);
+  auto r = smit::cross(c, c);
 
   std::cout << r.x() << " " << r.y() << " " << r.z() << std::endl;
 
-  si::point_with_vector_3d<float> pv;
+  smit::point_with_vector_3d<float> pv;
 
   pv.point().x() = 2347;
 
   std::cout << pv.point().x() << std::endl;
 
-  si::vector<si::point_with_vector_3d<float>> v_pv(10);
+  smit::vector<smit::point_with_vector_3d<float>> v_pv(10);
 
-  si::vector<si::point_with_vector_3d<float>>::iterator i;
+  smit::vector<smit::point_with_vector_3d<float>>::iterator i;
   i = v_pv.begin();
 
   auto& cont = v_pv.begin()->point();

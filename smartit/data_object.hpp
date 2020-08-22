@@ -9,7 +9,7 @@
 #include "container_types.hpp"
 #include "utils.hpp"
 
-namespace si {
+namespace smit {
 
   // Forward declaration of access functions
   template<class Object>

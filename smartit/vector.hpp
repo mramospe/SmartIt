@@ -5,7 +5,7 @@
 
 #include "container_types.hpp"
 
-namespace si {
+namespace smit {
 
   /** Vector class
    *

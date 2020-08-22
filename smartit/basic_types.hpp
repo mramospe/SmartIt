@@ -5,7 +5,7 @@
 
 #include "data_object.hpp"
 
-namespace si {
+namespace smit {
 
   /** Prototype class for a point in three dimensions
    *

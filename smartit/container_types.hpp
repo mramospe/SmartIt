@@ -7,7 +7,7 @@
 
 #include "utils.hpp"
 
-namespace si {
+namespace smit {
 
   template<class Object>
   class vector;

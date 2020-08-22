@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-namespace si {
+namespace smit {
   namespace core{
 
     /// Hold types

@@ -3,7 +3,7 @@
 
 #include "utils.hpp"
 
-namespace si {
+namespace smit {
 
   /** Array class
    *
