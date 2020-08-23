@@ -18,6 +18,7 @@ namespace smit {
     struct tuple_element<N, T0, T...> {
       typedef typename tuple_element<N - 1, T...>::type type;
     };
+
   } // namespace core
 } // namespace smit
 

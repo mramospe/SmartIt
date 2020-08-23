@@ -22,12 +22,12 @@ namespace smit {
     auto &x() { return get_field<0>(*this); }
 
     /// Y coordinate
-    const auto &y() const { return get_field<1>(*this); }
+    auto const&y() const { return get_field<1>(*this); }
     /// Y coordinate
     auto &y() { return get_field<1>(*this); }
 
     /// Z coordinate
-    const auto &z() const { return get_field<2>(*this); }
+    auto const &z() const { return get_field<2>(*this); }
     /// Z coordinate
     auto &z() { return get_field<2>(*this); }
 

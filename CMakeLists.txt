@@ -36,18 +36,18 @@ configure_package_config_file(
  "${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
  INSTALL_DESTINATION
- ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+ ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/cmake)
 
 install(EXPORT ${PROJECT_NAME}_Targets
        FILE ${PROJECT_NAME}Targets.cmake
        NAMESPACE ${PROJECT_NAME}::
-       DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+       DESTINATION ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/cmake)
 
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
              "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-       DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+       DESTINATION ${PROJECT_BINARY_DIR}/${PROJECT_NAME}/cmake)
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/smartit DESTINATION include)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/smartit DESTINATION ${PROJECT_BINARY_DIR}/include)
 
 #
 # Installation of the test scripts
@@ -55,7 +55,10 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/smartit DESTINATION include)
 if(INSTALL_TESTS)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
     include_directories(include)
-    add_executable(${PROJECT_NAME}_Test test/test.cpp)
-    set_target_properties(${PROJECT_NAME}_Test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
-    target_compile_features(${PROJECT_NAME}_Test INTERFACE cxx_std_17)
+    file(GLOB TEST_SOURCES ${PROJECT_SOURCE_DIR}/test/*.cpp)
+    foreach(testsourcefile ${TEST_SOURCES})
+      get_filename_component(testname ${testsourcefile} NAME_WE)
+      add_executable(${testname} ${testsourcefile})
+      set_target_properties(${testname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+    endforeach(testsourcefile ${TEST_SOURCES})
 endif(INSTALL_TESTS)
