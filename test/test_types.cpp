@@ -1,6 +1,32 @@
 #include "smartit/types.hpp"
 #include "smartit/test.hpp"
 
+/// Test function for "single_value"
+template<class Type>
+void test_single_value() {
+
+  smit::core::single_value<Type> v;
+  v.value() = 10;
+  SMARTIT_TEST_ASSERT(v.value, 10);
+  auto& _v = v.value();
+  _v = 0;
+  SMARTIT_TEST_ASSERT(v.value, 0);
+}
+
+/// Test function for "two_single_values"
+template<class Type>
+void test_two_single_values() {
+
+  smit::core::two_single_values<Type> tv;
+  tv.first().value() = +10;
+  tv.second().value() = -10;
+
+  auto& f = tv.first();
+  auto& s = tv.second();
+
+  SMARTIT_TEST_ASSERT(f.value, +10);
+  SMARTIT_TEST_ASSERT(s.value, -10);
+}
 
 template<class XYZ>
 void set_xyz_and_compare(XYZ& v) {
@@ -33,6 +59,16 @@ void test_point_with_vector_3d() {
 int main() {
 
   smit::core::test_collector coll("set-and-compare");
+
+  // Test the "single_value" class
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_single_value<int>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_single_value<float>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_single_value<double>);
+
+  // Test the "two_single_values" class
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<int>);
+  //SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<float>);
+  //SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<double>);
 
   // Set X Y Z for smit::point_3d
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_3d<int>);

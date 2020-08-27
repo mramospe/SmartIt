@@ -10,9 +10,11 @@ namespace smit {
   /** Vector class
    *
    */
-  template <class Object> class vector : public Object::vector_type {
+  template <class Object> class vector : public core::vector_base_t<typename Object::types> {
 
   public:
+    /// Base class
+    using base_class = core::vector_base_t<typename Object::types>;
     /// Similar to std::vector
     using iterator = typename Object::vector_iterator_type;
 
@@ -20,7 +22,7 @@ namespace smit {
     vector() {}
     /// Construct the vector from a size
     vector(size_t n)
-        : Object::vector_type{
+        : base_class{
               core::make_vector_tuple(n, typename Object::types{})} {};
     /// Destructor
     ~vector() {}

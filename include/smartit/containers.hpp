@@ -2,6 +2,7 @@
 #define SMARTIT_CONTAINERS_HPP
 
 #include <array>
+#include <tuple>
 #include <type_traits>
 #include <vector>
 
@@ -35,6 +36,12 @@ namespace smit {
       using iterator = typename type::iterator;
     };
 
+    /// Base type for array objects
+    template <size_t N, class ... Types>
+    struct array_base {
+      using type = std::tuple<typename array_proxy<Types, N>::type...>;
+    };
+
     /// Proxy for a vector, storing its type and iterator
     template <class Type, class Enable = void>
     struct vector_proxy {}; // primary template
@@ -52,6 +59,23 @@ namespace smit {
       using type = vector<Type>;
       using iterator = typename type::iterator;
     };
+
+
+    // Auxiliar function to determine the vector type
+    template<class ... Types>
+    constexpr auto _f_vector_base(types_holder<Types ...>) {
+      return std::tuple<typename vector_proxy<Types>::type ...>{};
+    }
+
+    /// Container of the base type for vector objects
+    template<class H>
+    struct vector_base {
+      using type = decltype(_f_vector_base(H{}));
+    };
+
+    /// Base type for vector objects
+    template<class H>
+    using vector_base_t = typename vector_base<H>::type;
 
     /// Create a tuple of vectors with the given size
     template <class... Types>

@@ -47,8 +47,6 @@ namespace smit {
   template <typename Type>
   using point_3d =
       typename data_object<point_3d_proto, Type, Type, Type>::value_type;
-  template <typename Type>
-  using point_3d_raw = data_object<point_3d_proto, Type, Type, Type>;
 
   /// Dot product
   template <class T1, class T2>

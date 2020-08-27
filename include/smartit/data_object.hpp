@@ -1,10 +1,8 @@
 #ifndef SMARTIT_DATA_OBJECT_HPP
 #define SMARTIT_DATA_OBJECT_HPP
 
-#include <array>
 #include <tuple>
 #include <type_traits>
-#include <vector>
 
 #include "containers.hpp"
 #include "utils.hpp"
@@ -55,15 +53,6 @@ namespace smit {
         iterator_type &m_iter;
 
       public:
-        /// Data object type
-        using data_object_type = data_object::data_object_type;
-        /// Types of the fields
-        using types = data_object::types;
-        /// Number of fields
-        static const auto number_of_fields = data_object::number_of_fields;
-
-        /// Construct the class from the iterator instance
-        __base_container_type(iterator_type &it) : m_iter{it} {}
 
         /// Get an element from a container type
         template <size_t Index>
@@ -76,6 +65,16 @@ namespace smit {
         friend auto const &get_field(__base_container_type const &ct) {
           return *std::get<Index>(ct.m_iter);
         }
+
+        /// Data object type
+        using data_object_type = data_object::data_object_type;
+        /// Types of the fields
+        using types = data_object::types;
+        /// Number of fields
+        static const auto number_of_fields = data_object::number_of_fields;
+
+        /// Construct the class from the iterator instance
+        __base_container_type(iterator_type &it) : m_iter{it} {}
       };
 
       /// Declare the container type
@@ -200,27 +199,6 @@ namespace smit {
     class __base_value_type : public std::tuple<Types...> {
 
     public:
-      /// Data object type
-      using data_object_type = data_object::data_object_type;
-      /// Types of the fields
-      using types = data_object::types;
-      /// Number of fields
-      static const auto number_of_fields = data_object::number_of_fields;
-
-      // Container types
-      template <size_t N>
-      using array_type = std::tuple<typename core::array_proxy<Types, N>::type...>;
-      using vector_type = std::tuple<typename core::vector_proxy<Types>::type...>;
-
-      // Iterator types
-      template <size_t N>
-      using array_iterator_type =
-          iterator<typename core::array_proxy<Types, N>::iterator...>;
-      using vector_iterator_type =
-          iterator<typename core::vector_proxy<Types>::iterator...>;
-
-      /// Inherit constructors
-      using std::tuple<Types...>::tuple;
 
       /// Get an element from a data object
       template <size_t Index> friend auto &get_field(__base_value_type &v) {
@@ -232,6 +210,23 @@ namespace smit {
       friend auto const &get_field(__base_value_type const &v) {
         return std::get<Index>(v);
       }
+
+      /// Data object type
+      using data_object_type = data_object::data_object_type;
+      /// Types of the fields
+      using types = data_object::types;
+      /// Number of fields
+      static const auto number_of_fields = data_object::number_of_fields;
+
+      // Iterator types
+      template <size_t N>
+      using array_iterator_type =
+          iterator<typename core::array_proxy<Types, N>::iterator...>;
+      using vector_iterator_type =
+          iterator<typename core::vector_proxy<Types>::iterator...>;
+
+      /// Inherit constructors
+      using std::tuple<Types...>::tuple;
     };
 
     /// Declare the value type
