@@ -16,7 +16,7 @@ namespace smit {
     template <class Type, size_t N>
     struct array_proxy<
         Type, N,
-        typename std::enable_if_t<std::is_arithmetic<Type>::value>::type> {
+        typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
       using type = std::array<Type, N>;
       using iterator = typename type::iterator;
     };
@@ -24,14 +24,31 @@ namespace smit {
     template <class Type, size_t N>
     struct array_proxy<
         Type, N,
-        typename std::enable_if_t<!std::is_arithmetic<Type>::value>::type> {
-      using type = std::array<Type, N>;
+        typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
+      using type = array<Type, N>;
       using iterator = typename type::iterator;
     };
 
+    template <class Type, size_t N>
+    using array_proxy_t = typename array_proxy<Type, N>::type;
+
+    // Auxiliar function to determine the array type
+    template <size_t N, class... Types>
+    constexpr auto _f_array_base(utils::types_holder<Types...>) {
+      return std::tuple<array_proxy_t<Types, N>...>{};
+    }
+
+    /// Container of the base type for array objects
+    template <class H, size_t N> struct array_base {
+      using type = decltype(_f_array_base<N>(H{}));
+    };
+
     /// Base type for array objects
-    template <size_t N, class... Types> struct array_base {
-      using type = std::tuple<typename array_proxy<Types, N>::type...>;
+    template <class H, size_t N>
+    using array_base_t = typename array_base<H, N>::type;
+
+    template <size_t N> struct sized_array_proxy {
+      template <class Type> using type = array_proxy_t<Type, N>;
     };
   } // namespace core
 
@@ -39,13 +56,15 @@ namespace smit {
    * @brief Definition of an array based on the std::array class
    */
   template <class Object, size_t N>
-  class array : public Object::template array_type<N> {
+  class array : public core::array_base_t<typename Object::types, N> {
 
   public:
-    using iterator = typename Object::template array_iterator_type<N>;
+    using base_class = core::array_base_t<typename Object::types, N>;
+    using iterator =
+        core::__iterator<core::sized_array_proxy<N>::template type, Object>;
 
     /// Default constructor
-    array() {}
+    array() : base_class{} {}
     /// Destructor
     ~array() {}
 

@@ -41,6 +41,15 @@ template <class Type> void test_point_3d() {
 
   smit::point_3d<Type> t;
   set_xyz_and_compare(t);
+
+  smit::point_3d<Type> a{1, 0, 0};
+  smit::point_3d<Type> b{0, 1, 0};
+
+  const auto c = smit::cross(a, b);
+
+  SMARTIT_TEST_ASSERT(c.x, 0);
+  SMARTIT_TEST_ASSERT(c.y, 0);
+  SMARTIT_TEST_ASSERT(c.z, 1);
 }
 
 template <class Type> void test_point_with_vector_3d() {
