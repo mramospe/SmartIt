@@ -22,7 +22,7 @@ namespace smit {
     auto &x() { return get_field<0>(*this); }
 
     /// Y coordinate
-    auto const&y() const { return get_field<1>(*this); }
+    auto const &y() const { return get_field<1>(*this); }
     /// Y coordinate
     auto &y() { return get_field<1>(*this); }
 

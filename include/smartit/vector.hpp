@@ -3,27 +3,71 @@
 
 #include <vector>
 
-#include "containers.hpp"
+#include "iterator.hpp"
 
 namespace smit {
+
+  // Forward declaration of the vector class
+  template <class Object> class vector;
+  namespace core {
+
+    /// Proxy for a vector, storing its type and iterator
+    template <class Type, class Enable = void>
+    struct vector_proxy {}; // primary template
+
+    template <class Type>
+    struct vector_proxy<
+        Type, typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
+      using type = std::vector<Type>;
+      using iterator = typename type::iterator;
+    };
+
+    template <class Type>
+    struct vector_proxy<
+        Type, typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
+      using type = vector<Type>;
+      using iterator = typename type::iterator;
+    };
+
+    // Auxiliar function to determine the vector type
+    template <class... Types>
+    constexpr auto _f_vector_base(types_holder<Types...>) {
+      return std::tuple<typename vector_proxy<Types>::type...>{};
+    }
+
+    /// Container of the base type for vector objects
+    template <class H> struct vector_base {
+      using type = decltype(_f_vector_base(H{}));
+    };
+
+    /// Base type for vector objects
+    template <class H> using vector_base_t = typename vector_base<H>::type;
+
+    /// Create a tuple of vectors with the given size
+    template <class... Types>
+    constexpr std::tuple<typename vector_proxy<Types>::type...>
+    make_vector_tuple(size_t n, types_holder<Types...>) {
+      return {typename vector_proxy<Types>::type(n)...};
+    }
+  } // namespace core
 
   /** Vector class
    *
    */
-  template <class Object> class vector : public core::vector_base_t<typename Object::types> {
+  template <class Object>
+  class vector : public core::vector_base_t<typename Object::types> {
 
   public:
     /// Base class
     using base_class = core::vector_base_t<typename Object::types>;
     /// Similar to std::vector
-    using iterator = typename Object::vector_iterator_type;
+    using iterator = __iterator<core::vector_proxy, Object>;
 
     /// Default constructor
     vector() {}
     /// Construct the vector from a size
     vector(size_t n)
-        : base_class{
-              core::make_vector_tuple(n, typename Object::types{})} {};
+        : base_class{core::make_vector_tuple(n, typename Object::types{})} {};
     /// Destructor
     ~vector() {}
 
