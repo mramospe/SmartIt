@@ -17,11 +17,10 @@ namespace smit {
     /**
      * @brief Base class to store a value type
      */
-    template <template <class> class Prototype, class... Types>
+    template <class... Types>
     class __base_value_type : public std::tuple<Types...> {
 
     public:
-      template <class T> using prototype = Prototype<T>;
       using types = utils::types_holder<Types...>;
 
       static const auto number_of_fields = sizeof...(Types);
@@ -115,9 +114,9 @@ namespace smit {
    //}
 
    // Unitary vector as an external function
-   template <class T> smit::extract_value_type_t<T> unit(const point_2d_proto<T> &a) {
-     auto const m = std::sqrt(a.x() * a.x() + a.y() * a.y());
-     return {a.x() / m, a.y() / m};
+   template <class T> smit::extract_value_type_t<T> unit(const point_2d_proto<T>
+   &a) { auto const m = std::sqrt(a.x() * a.x() + a.y() * a.y()); return {a.x()
+   / m, a.y() / m};
    }
 
 
@@ -140,9 +139,21 @@ namespace smit {
    *
    */
   template <template <class> class Prototype, class... Types>
-  using data_object = Prototype<core::__base_value_type<Prototype, Types...>>;
+  using data_object = Prototype<core::__base_value_type<Types...>>;
 
   namespace core {
+
+    template <template <class> class Prototype, class ValueType>
+    constexpr auto
+    _f_extract_prototype(utils::types_holder<Prototype<ValueType>>) {
+      return utils::template_holder<Prototype>{};
+    }
+
+    template <class Object> struct extract_prototype {
+      template <class ValueType>
+      using type = typename decltype(_f_extract_prototype(
+          utils::types_holder<Object>{}))::template type<ValueType>;
+    };
 
     template <template <class> class Prototype, class... Types>
     constexpr auto _f_value_type(utils::types_holder<Types...>) {
@@ -157,8 +168,9 @@ namespace smit {
    * @see smit::extract_value_type_t
    */
   template <class T> struct extract_value_type {
-    using type = decltype(
-        core::_f_value_type<T::template prototype>(typename T::types{}));
+    using type =
+        decltype(core::_f_value_type<core::extract_prototype<T>::template type>(
+            typename T::types{}));
   };
 
   /**
@@ -178,23 +190,26 @@ namespace smit {
    * @brief Get the value type of several template arguments to a prototype
    * class
    *
-   * @see smit::common_value_type_t
+   * @see smit::build_value_type_t
    */
-  template <class First, class... Last> struct common_value_type {
+  template <template <class> class Prototype, class First, class... Last>
+  struct build_value_type {
     using type = typename std::enable_if<
-        (std::is_same<extract_value_type_t<First>,
-                      extract_value_type_t<Last>>::value &&
+        (utils::is_same_template<
+             core::extract_prototype<First>::template type,
+             core::extract_prototype<Last>::template type>::value &&
          ...),
         extract_value_type_t<First>>::type;
   };
 
   /**
-   * @brief Type returned by smit::common_value_type
+   * @brief Type returned by smit::build_value_type
    *
-   * @see smit::common_value_type
+   * @see smit::build_value_type
    */
-  template <class First, class... Last>
-  using common_value_type_t = typename common_value_type<First, Last...>::type;
+  template <template <class> class Prototype, class First, class... Last>
+  using build_value_type_t =
+      typename build_value_type<Prototype, First, Last...>::type;
 } // namespace smit
 
 #endif

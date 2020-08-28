@@ -61,8 +61,7 @@ namespace smit {
 
   /// Cross product
   template <class T1, class T2>
-  common_value_type_t<T1, T2> cross(const point_3d_proto<T1> &f,
-                                    const point_3d_proto<T2> &s) {
+  build_value_type_t<point_3d_proto, T1, T2> cross(const T1 &f, const T2 &s) {
     return {
         f.y() * s.z() - f.z() * s.y(),
         f.z() * s.x() - f.x() * s.z(),

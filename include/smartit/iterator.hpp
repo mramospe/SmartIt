@@ -33,7 +33,8 @@ namespace smit {
       using base_class = core::iterator_base<Proxy, typename Object::types>;
       /// Type of the container
       using container_type =
-          __container_type<Object::template prototype, __iterator>;
+          __container_type<core::extract_prototype<Object>::template type,
+                           __iterator>;
       using value_type = Object;
       using types = typename Object::types;
       /// Number of fields

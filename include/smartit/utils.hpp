@@ -7,6 +7,17 @@ namespace smit {
     /// Hold types
     template <typename... Types> struct types_holder {};
 
+    /// Hold templates
+    template <template <class...> class T> struct template_holder {
+      template <class... U> using type = T<U...>;
+    };
+
+    template <template <typename...> class, template <typename...> class>
+    struct is_same_template : std::false_type {};
+
+    template <template <typename...> class T>
+    struct is_same_template<T, T> : std::true_type {};
+
     /// Determines the type of an element in a tuple
     template <int N, typename... T> struct tuple_element;
 
