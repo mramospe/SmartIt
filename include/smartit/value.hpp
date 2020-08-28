@@ -43,8 +43,7 @@ namespace smit {
     /**
      * @brief Base template for a container type
      */
-    template <template <class> class Prototype, class Iterator>
-    class __base_container_type {
+    template <class Iterator> class __base_container_type {
 
     public:
       /// Link to the iterator instance
@@ -63,7 +62,6 @@ namespace smit {
         return *std::get<Index>(ct.m_iter);
       }
 
-      template <class T> using prototype = Prototype<T>;
       using types = typename Iterator::types;
 
       /// Construct the class from the iterator instance
@@ -183,8 +181,7 @@ namespace smit {
 
   /// Declaration of the container type
   template <template <class> class Prototype, class Iterator>
-  using __container_type =
-      Prototype<core::__base_container_type<Prototype, Iterator>>;
+  using __container_type = Prototype<core::__base_container_type<Iterator>>;
 
   /**
    * @brief Get the value type of several template arguments to a prototype
