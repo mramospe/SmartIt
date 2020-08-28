@@ -62,18 +62,18 @@ int main() {
 
   // Test the "two_single_values" class
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<int>);
-  // SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<float>);
-  // SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<double>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<float>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_two_single_values<double>);
 
   // Set X Y Z for smit::point_3d
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_3d<int>);
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_3d<float>);
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_3d<double>);
-  /*
-    // Set the point and vector and compare for smit::point_with_vector_3d
-    SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<int>);
-    SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<float>);
-    SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<double>);
-  */
+
+  // Set the point and vector and compare for smit::point_with_vector_3d
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<int>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<float>);
+  SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_point_with_vector_3d<double>);
+
   return coll.status();
 }
