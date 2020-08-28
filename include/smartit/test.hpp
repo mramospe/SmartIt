@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "data_object.hpp"
+#include "value.hpp"
 
 namespace smit {
 
@@ -72,8 +72,7 @@ namespace smit {
     };
 
     template <typename Type>
-    using single_value =
-        typename data_object<single_value_proto, Type>::value_type;
+    using single_value = data_object<single_value_proto, Type>;
 
     /** Data object composed by another two
      *
@@ -92,8 +91,8 @@ namespace smit {
 
     template <typename Type>
     using two_single_values =
-        typename data_object<two_single_values_proto, single_value<Type>,
-                             single_value<Type>>::value_type;
+        data_object<two_single_values_proto, single_value<Type>,
+                    single_value<Type>>;
   } // namespace test
 } // namespace smit
 

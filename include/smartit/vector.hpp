@@ -54,8 +54,8 @@ namespace smit {
     }
   } // namespace core
 
-  /** Vector class
-   *
+  /**
+   * @brief Definition of a vector based on the std::vector class
    */
   template <class Object>
   class vector : public core::vector_base_t<typename Object::types> {

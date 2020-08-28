@@ -3,12 +3,14 @@
 
 #include <cmath>
 
-#include "data_object.hpp"
+#include "value.hpp"
 
 namespace smit {
 
-  /** Prototype class for a point in three dimensions
+  /**
+   * @brief Prototype class for a point in three dimensions
    *
+   * @see smit::point_3d
    */
   template <class T> class point_3d_proto : public T {
 
@@ -43,9 +45,13 @@ namespace smit {
     auto theta() const { return std::acos(z() / std::sqrt(mod2())); }
   };
 
-  /// Alias for a point in three dimensions (see smit::point_3d_proto)
+  /**
+   * @brief Alias for a point in three dimensions
+   *
+   * @see smit::point_3d_proto
+   */
   template <typename Type>
-  using point_3d = data_object_t<point_3d_proto, Type, Type, Type>;
+  using point_3d = data_object<point_3d_proto, Type, Type, Type>;
 
   /// Dot product
   template <class T1, class T2>
@@ -64,8 +70,10 @@ namespace smit {
     };
   }
 
-  /** Prototype class for a point and a vector in three dimensions
+  /**
+   * @brief Prototype class for a point and a vector in three dimensions
    *
+   * @see smit::point_with_vector_3d
    */
   template <class T> class point_with_vector_3d_proto : public T {
 
@@ -84,10 +92,14 @@ namespace smit {
     auto &vector() { return get_field<1>(*this); }
   };
 
-  /// Alias for a point and a vector in three dimensions (see smit::point_with_vector_3d_proto)
+  /**
+   * @brief Alias for a point and a vector in three dimensions
+   *
+   * @see smit::point_with_vector_3d_proto
+   */
   template <typename Type>
   using point_with_vector_3d =
-      data_object_t<point_with_vector_3d_proto, point_3d<Type>, point_3d<Type>>;
+      data_object<point_with_vector_3d_proto, point_3d<Type>, point_3d<Type>>;
 } // namespace smit
 
 #endif // SMARTIT_TYPES_HPP

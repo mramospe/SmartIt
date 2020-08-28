@@ -7,15 +7,15 @@
 
 namespace smit {
 
-  // Forward declaration of access functions
+  /// Function to access a field of an object based on std::tuple
   template <class Object> auto &get_field(Object &obj);
-
+  /// Function to access a field of an object based on std::tuple
   template <class Object> auto const &get_field(Object const &obj);
 
   namespace core {
 
-    /** Value type
-     *
+    /**
+     * @brief Base class to store a value type
      */
     template <template <class> class Prototype, class... Types>
     class __base_value_type : public std::tuple<Types...> {
@@ -41,8 +41,8 @@ namespace smit {
       using std::tuple<Types...>::tuple;
     };
 
-    /** Container type
-     *
+    /**
+     * @brief Base template for a container type
      */
     template <template <class> class Prototype, class Iterator>
     class __base_container_type {
@@ -72,14 +72,130 @@ namespace smit {
     };
   } // namespace core
 
-  /// Declare the value type
+  /**
+   * @brief Template class to generate data object instances.
+   *
+   * Data objects are build using a prototype class, that must be a template
+   * accepting a single argument. This prototype must provide the necessary
+   * methods to extract all the fields of the object through the smit::get_field
+   * function. Template functions can be later defined, taking two template
+   * arguments as an input. The return type can be obtained using the
+   * smit::common_value_type_t structure. The types of the fields are determined
+   * with the following template arguments, and can be data objects too. An
+   * example of a data object would be:
+   *
+   * \code{.cpp}
+   *
+   * #include "smartit/all.hpp"
+   *
+   * template<class T>
+   * class point_2d_proto : public T {
+   *
+   * public:
+   *
+   *  using T::T; // Inherit constructors
+   *
+   *  auto& x() { return get_field<0>(*this); }
+   *  auto const& x() { return get_field<0>(*this); }
+   *  auto& y() { return get_field<1>(*this); }
+   *  auto const& y() { return get_field<1>(*this); }
+   *
+   *  // Dot product as a member function
+   *  auto dot(const point2d_proto& other) {
+   *    return this->x() * other.x() + this->y() * other.y();
+   *   }
+   * };
+   *
+   * // Dot product as an external function
+   * template<class T1, class T2>
+   * auto dot(const point_2d_proto<T1>& a, const point_2d_proto<T2>& b) {
+   *   return a.x() * b.x() + a.y() * b.y();
+   * }
+   *
+   * // Unitary vector as an external function
+   * template<class T>
+   * extract_value_type_t<T> unit(const point_2d_proto<T>& a) {
+   *   auto const m = std::sqrt(a.x() * a.x() + a.y() * a.y());
+   *   return extract_value_type_t<T>{a.x() / m, a.y() / m};
+   * }
+   *
+   * // Define our new data object
+   * template<typename Type>
+   * using point_2d = data_object<point_2d_proto, Type, Type>;
+   *
+   * int main() {
+   *
+   *   point_2d<double> a{1, 1};
+   *   point_2d<double> b{1, 0};
+   *
+   *   auto c = dot(a, b);
+   *
+   *   return 0;
+   * }
+   *
+   * \endcode
+   *
+   * @see smit::common_value_type
+   * @see smit::common_value_type_t
+   * @see smit::get_field
+   *
+   */
   template <template <class> class Prototype, class... Types>
-  using __value_type = Prototype<core::__base_value_type<Prototype, Types...>>;
+  using data_object = Prototype<core::__base_value_type<Prototype, Types...>>;
 
-  /// Declare the container type
+  namespace core {
+
+    template <template <class> class Prototype, class... Types>
+    constexpr auto _f_value_type(utils::types_holder<Types...>) {
+      return data_object<Prototype, Types...>{};
+    }
+  } // namespace core
+
+  /**
+   * @brief Determine the value type of the template argument for a
+   * smit::data_object
+   *
+   * @see smit::extract_value_type_t
+   */
+  template <class T> struct extract_value_type {
+    using type = decltype(
+        core::_f_value_type<T::template prototype>(typename T::types{}));
+  };
+
+  /**
+   * @brief Type returned by smit::extract_value_type
+   *
+   * @see smit::extract_value_type
+   */
+  template <class T>
+  using extract_value_type_t = typename extract_value_type<T>::type;
+
+  /// Declaration of the container type
   template <template <class> class Prototype, class Iterator>
   using __container_type =
       Prototype<core::__base_container_type<Prototype, Iterator>>;
+
+  /**
+   * @brief Get the value type of several template arguments to a prototype
+   * class
+   *
+   * @see smit::common_value_type_t
+   */
+  template <class First, class... Last> struct common_value_type {
+    using type = typename std::enable_if<
+        (std::is_same<extract_value_type_t<First>,
+                      extract_value_type_t<Last>>::value &&
+         ...),
+        extract_value_type_t<First>>::type;
+  };
+
+  /**
+   * @brief Type returned by smit::common_value_type
+   *
+   * @see smit::common_value_type
+   */
+  template <class First, class... Last>
+  using common_value_type_t = typename common_value_type<First, Last...>::type;
 } // namespace smit
 
 #endif

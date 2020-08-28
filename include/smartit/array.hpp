@@ -34,8 +34,9 @@ namespace smit {
       using type = std::tuple<typename array_proxy<Types, N>::type...>;
     };
   } // namespace core
-  /** Array class
-   *
+
+  /**
+   * @brief Definition of an array based on the std::array class
    */
   template <class Object, size_t N>
   class array : public Object::template array_type<N> {
