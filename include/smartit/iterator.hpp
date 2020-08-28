@@ -9,30 +9,29 @@ namespace smit {
 
   namespace core {
     template <template <class> class Proxy, class... Types>
-    constexpr auto _f_iterator_base_type(types_holder<Types...>) {
+    constexpr auto _f_iterator_base(types_holder<Types...>) {
       return std::tuple<typename Proxy<Types>::iterator...>{};
     }
 
-    template <template <class> class Proxy, class H>
-    struct __iterator_base_type {
-      using type = decltype(_f_iterator_base_type<Proxy>(H{}));
+    template <template <class> class Proxy, class H> struct _s_iterator_base {
+      using type = decltype(_f_iterator_base<Proxy>(H{}));
     };
 
+    /// Type of the iterator for the given container proxy and types holder
     template <template <class> class Proxy, class H>
-    using iterator_base_type_t = typename __iterator_base_type<Proxy, H>::type;
+    using iterator_base = typename _s_iterator_base<Proxy, H>::type;
   } // namespace core
 
   /** Iterator type
    *
    */
   template <template <class> class Proxy, class Object>
-  class __iterator
-      : public core::iterator_base_type_t<Proxy, typename Object::types> {
+  class __iterator : public core::iterator_base<Proxy, typename Object::types> {
 
   public:
-    /// Tuple type
-    using base_class =
-        core::iterator_base_type_t<Proxy, typename Object::types>;
+    /// Base class
+    using base_class = core::iterator_base<Proxy, typename Object::types>;
+    /// Type of the container
     using container_type =
         __container_type<Object::template prototype, __iterator>;
     using value_type = Object;
@@ -40,11 +39,11 @@ namespace smit {
     /// Number of fields
     static const auto number_of_fields = Object::number_of_fields;
 
-    explicit __iterator() : base_class{}, m_container{*this} { }
+    explicit __iterator() : base_class{}, m_container{*this} {}
 
     // Similar constructors to those of std::tuple
     template <class... Iterators>
-    explicit __iterator(Iterators const&... args)
+    explicit __iterator(Iterators const &... args)
         : base_class{args...}, m_container{*this} {}
 
     /// Constructors for cases with no arguments (default) and with

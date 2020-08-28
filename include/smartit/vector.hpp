@@ -29,10 +29,13 @@ namespace smit {
       using iterator = typename type::iterator;
     };
 
+    template <class Type>
+    using vector_proxy_t = typename vector_proxy<Type>::type;
+
     // Auxiliar function to determine the vector type
     template <class... Types>
     constexpr auto _f_vector_base(types_holder<Types...>) {
-      return std::tuple<typename vector_proxy<Types>::type...>{};
+      return std::tuple<vector_proxy_t<Types>...>{};
     }
 
     /// Container of the base type for vector objects
@@ -45,9 +48,9 @@ namespace smit {
 
     /// Create a tuple of vectors with the given size
     template <class... Types>
-    constexpr std::tuple<typename vector_proxy<Types>::type...>
+    constexpr std::tuple<vector_proxy_t<Types>...>
     make_vector_tuple(size_t n, types_holder<Types...>) {
-      return {typename vector_proxy<Types>::type(n)...};
+      return {vector_proxy_t<Types>(n)...};
     }
   } // namespace core
 

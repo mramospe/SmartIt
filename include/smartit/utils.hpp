@@ -11,14 +11,16 @@ namespace smit {
     template <int N, typename... T> struct tuple_element;
 
     template <typename T0, typename... T> struct tuple_element<0, T0, T...> {
-      typedef T0 type;
+      using type = T0;
     };
 
     template <int N, typename T0, typename... T>
     struct tuple_element<N, T0, T...> {
-      typedef typename tuple_element<N - 1, T...>::type type;
+      using type = typename tuple_element<N - 1, T...>::type;
     };
 
+    template <int N, typename T0, typename... T>
+    using tuple_element_t = typename tuple_element<N, T0, T...>::type;
   } // namespace core
 } // namespace smit
 

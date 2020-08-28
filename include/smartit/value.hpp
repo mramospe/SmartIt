@@ -44,7 +44,8 @@ namespace smit {
   /** Container type
    *
    */
-  template <template <class> class Prototype, class Iterator> class __base_container_type {
+  template <template <class> class Prototype, class Iterator>
+  class __base_container_type {
 
   public:
     /// Link to the iterator instance
@@ -71,7 +72,8 @@ namespace smit {
 
   /// Declare the container type
   template <template <class> class Prototype, class Iterator>
-  using __container_type = Prototype<__base_container_type<Prototype, Iterator>>;
+  using __container_type =
+      Prototype<__base_container_type<Prototype, Iterator>>;
 } // namespace smit
 
 #endif
