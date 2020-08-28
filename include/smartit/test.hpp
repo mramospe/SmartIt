@@ -9,7 +9,7 @@
 
 namespace smit {
 
-  namespace core {
+  namespace test {
 
     /** Class to collect test results and display them on error
      *
@@ -94,7 +94,7 @@ namespace smit {
     using two_single_values =
         typename data_object<two_single_values_proto, single_value<Type>,
                              single_value<Type>>::value_type;
-  } // namespace core
+  } // namespace test
 } // namespace smit
 
 #endif // SMARTIT_TEST_HPP

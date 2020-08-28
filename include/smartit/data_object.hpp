@@ -1,10 +1,8 @@
 #ifndef SMARTIT_DATA_OBJECT_HPP
 #define SMARTIT_DATA_OBJECT_HPP
 
-#include <tuple>
 #include <type_traits>
 
-#include "containers.hpp"
 #include "utils.hpp"
 #include "value.hpp"
 
@@ -18,7 +16,7 @@ namespace smit {
 
   public:
     /// Types of the fields
-    using types = core::types_holder<Types...>;
+    using types = utils::types_holder<Types...>;
     /// Number of fields
     static auto const number_of_fields = sizeof...(Types);
     /// Value type (user interface)
@@ -27,13 +25,13 @@ namespace smit {
 
   namespace core {
     template <template <class> class Prototype, class... Types>
-    constexpr auto _f_value_type(types_holder<Types...>) {
+    constexpr auto _f_value_type(utils::types_holder<Types...>) {
       return __value_type<Prototype, Types...>{};
     }
 
     template <class T> struct _s_value_type {
-      using type = decltype(
-          core::_f_value_type<T::template prototype>(typename T::types{}));
+      using type =
+          decltype(_f_value_type<T::template prototype>(typename T::types{}));
     };
 
     template <class T> using _s_value_type_t = typename _s_value_type<T>::type;

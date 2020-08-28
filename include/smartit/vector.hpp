@@ -34,7 +34,7 @@ namespace smit {
 
     // Auxiliar function to determine the vector type
     template <class... Types>
-    constexpr auto _f_vector_base(types_holder<Types...>) {
+    constexpr auto _f_vector_base(utils::types_holder<Types...>) {
       return std::tuple<vector_proxy_t<Types>...>{};
     }
 
@@ -49,7 +49,7 @@ namespace smit {
     /// Create a tuple of vectors with the given size
     template <class... Types>
     constexpr std::tuple<vector_proxy_t<Types>...>
-    make_vector_tuple(size_t n, types_holder<Types...>) {
+    make_vector_tuple(size_t n, utils::types_holder<Types...>) {
       return {vector_proxy_t<Types>(n)...};
     }
   } // namespace core
@@ -64,7 +64,7 @@ namespace smit {
     /// Base class
     using base_class = core::vector_base_t<typename Object::types>;
     /// Similar to std::vector
-    using iterator = __iterator<core::vector_proxy, Object>;
+    using iterator = core::__iterator<core::vector_proxy, Object>;
 
     /// Default constructor
     vector() {}

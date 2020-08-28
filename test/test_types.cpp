@@ -4,7 +4,7 @@
 /// Test function for "single_value"
 template <class Type> void test_single_value() {
 
-  smit::core::single_value<Type> v;
+  smit::test::single_value<Type> v;
   v.value() = 10;
   SMARTIT_TEST_ASSERT(v.value, 10);
   auto &_v = v.value();
@@ -15,7 +15,7 @@ template <class Type> void test_single_value() {
 /// Test function for "two_single_values"
 template <class Type> void test_two_single_values() {
 
-  smit::core::two_single_values<Type> tv;
+  smit::test::two_single_values<Type> tv;
   tv.first().value() = +10;
   tv.second().value() = -10;
 
@@ -53,7 +53,7 @@ template <class Type> void test_point_with_vector_3d() {
 
 int main() {
 
-  smit::core::test_collector coll("set-and-compare");
+  smit::test::test_collector coll("set-and-compare");
 
   // Test the "single_value" class
   SMARTIT_TEST_SCOPE_FUNCTION(coll, &test_single_value<int>);

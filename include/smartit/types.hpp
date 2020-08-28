@@ -43,7 +43,7 @@ namespace smit {
     auto theta() const { return std::acos(z() / std::sqrt(mod2())); }
   };
 
-  /// Alias for a point in three dimensions
+  /// Alias for a point in three dimensions (see smit::point_3d_proto)
   template <typename Type>
   using point_3d = data_object_t<point_3d_proto, Type, Type, Type>;
 
@@ -84,7 +84,7 @@ namespace smit {
     auto &vector() { return get_field<1>(*this); }
   };
 
-  /// Alias for a point and a vector in three dimensions
+  /// Alias for a point and a vector in three dimensions (see smit::point_with_vector_3d_proto)
   template <typename Type>
   using point_with_vector_3d =
       data_object_t<point_with_vector_3d_proto, point_3d<Type>, point_3d<Type>>;

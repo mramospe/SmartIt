@@ -2,7 +2,7 @@
 #define SMARTIT_UTILS_HPP
 
 namespace smit {
-  namespace core {
+  namespace utils {
 
     /// Hold types
     template <typename... Types> struct types_holder {};
@@ -21,7 +21,7 @@ namespace smit {
 
     template <int N, typename T0, typename... T>
     using tuple_element_t = typename tuple_element<N, T0, T...>::type;
-  } // namespace core
+  } // namespace utils
 } // namespace smit
 
 #endif // SMARTIT_UTILS_HPP
