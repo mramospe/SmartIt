@@ -68,7 +68,7 @@ namespace smit {
       using T::T;
 
       auto &value() { return get_field<0>(*this); }
-      auto const &value() const { return get_field<0>(*this); }
+      auto const &value() const { return get_field_const<0>(*this); }
     };
 
     template <typename Type>
@@ -83,10 +83,10 @@ namespace smit {
       using T::T;
 
       auto &first() { return get_field<0>(*this); }
-      auto const &first() const { return get_field<0>(*this); }
+      auto const &first() const { return get_field_const<0>(*this); }
 
       auto &second() { return get_field<1>(*this); }
-      auto const &second() const { return get_field<1>(*this); }
+      auto const &second() const { return get_field_const<1>(*this); }
     };
 
     template <typename Type>

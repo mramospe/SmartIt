@@ -3,14 +3,10 @@
 
 #include <tuple>
 
+#include "traits.hpp"
 #include "utils.hpp"
 
 namespace smit {
-
-  /// Function to access a field of an object based on std::tuple
-  template <class Object> auto &get_field(Object &obj);
-  /// Function to access a field of an object based on std::tuple
-  template <class Object> auto const &get_field(Object const &obj);
 
   namespace core {
 
@@ -25,17 +21,6 @@ namespace smit {
 
       static const auto number_of_fields = sizeof...(Types);
 
-      /// Get an element from a data object
-      template <size_t Index> friend auto &get_field(__base_value_type &v) {
-        return std::get<Index>(v);
-      }
-
-      /// Get an element from a constant data object
-      template <size_t Index>
-      friend auto const &get_field(__base_value_type const &v) {
-        return std::get<Index>(v);
-      }
-
       /// Inherit constructors
       using std::tuple<Types...>::tuple;
     };
@@ -43,29 +28,15 @@ namespace smit {
     /**
      * @brief Base template for a container type
      */
-    template <class Iterator> class __base_container_type {
+    template <class... Iterators>
+    class __base_container_type : public std::tuple<Iterators &...> {
 
     public:
-      /// Link to the iterator instance
-      Iterator &m_iter;
-
-    public:
-      /// Get an element from a container type
-      template <size_t Index>
-      friend auto &get_field(__base_container_type &ct) {
-        return *std::get<Index>(ct.m_iter);
-      }
-
-      /// Get an element from a container type (constant)
-      template <size_t Index>
-      friend auto const &get_field(__base_container_type const &ct) {
-        return *std::get<Index>(ct.m_iter);
-      }
-
-      using types = typename Iterator::types;
+      using base_class = std::tuple<Iterators &...>;
 
       /// Construct the class from the iterator instance
-      __base_container_type(Iterator &it) : m_iter{it} {}
+      __base_container_type(std::tuple<Iterators...> &it)
+          : base_class{std::move(utils::vtuple_to_rtuple(it))} {}
     };
   } // namespace core
 
@@ -141,23 +112,50 @@ namespace smit {
 
   namespace core {
 
-    template <template <class> class Prototype, class ValueType>
-    constexpr auto
-    _f_extract_prototype(utils::types_holder<Prototype<ValueType>>) {
-      return utils::template_holder<Prototype>{};
+    template <template <class> class Prototype, class... Iterators>
+    constexpr auto _f_container_type(utils::types_holder<Iterators...>) {
+      return utils::type_wrapper<
+          Prototype<__base_container_type<Iterators...>>>{};
     }
 
-    template <class Object> struct extract_prototype {
-      template <class ValueType>
-      using type = typename decltype(_f_extract_prototype(
-          utils::types_holder<Object>{}))::template type<ValueType>;
-    };
+    /// Declaration of the container type
+    template <template <class> class Prototype, class IterTypes>
+    using __container_type =
+        typename decltype(_f_container_type<Prototype>(IterTypes{}))::type;
 
     template <template <class> class Prototype, class... Types>
     constexpr auto _f_value_type(utils::types_holder<Types...>) {
       return data_object<Prototype, Types...>{};
     }
   } // namespace core
+
+  /// Function to access a field of an object based on std::tuple
+  template <size_t I, class... Types>
+  inline utils::tuple_element_t<I, Types...> &
+  get_field(core::__base_value_type<Types...> &obj) {
+    return std::get<I>(obj);
+  }
+
+  /// Function to access a field of an object based on std::tuple
+  template <size_t I, class... Types>
+  inline utils::tuple_element_t<I, Types...> const &
+  get_field_const(core::__base_value_type<Types...> const &obj) {
+    return std::get<I>(obj);
+  }
+
+  /// Function to access a field of an object based on std::tuple
+  template <size_t I, class... Iterators>
+  inline typename utils::tuple_element_t<I, Iterators...>::value_type &
+  get_field(core::__base_container_type<Iterators...> &obj) {
+    return *std::get<I>(obj);
+  }
+
+  /// Function to access a field of an object based on std::tuple
+  template <size_t I, class... Iterators>
+  inline typename utils::tuple_element_t<I, Iterators...>::value_type const &
+  get_field_const(core::__base_container_type<Iterators...> const &obj) {
+    return *std::get<I>(obj);
+  }
 
   /**
    * @brief Determine the value type of the template argument for a
@@ -166,8 +164,8 @@ namespace smit {
    * @see smit::extract_value_type_t
    */
   template <class T> struct extract_value_type {
-    using type =
-        decltype(core::_f_value_type<core::extract_prototype<T>::template type>(
+    using type = decltype(
+        core::_f_value_type<traits::extract_prototype<T>::template type>(
             typename T::types{}));
   };
 
@@ -179,10 +177,6 @@ namespace smit {
   template <class T>
   using extract_value_type_t = typename extract_value_type<T>::type;
 
-  /// Declaration of the container type
-  template <template <class> class Prototype, class Iterator>
-  using __container_type = Prototype<core::__base_container_type<Iterator>>;
-
   /**
    * @brief Get the value type of several template arguments to a prototype
    * class
@@ -193,8 +187,8 @@ namespace smit {
   struct build_value_type {
     using type = typename std::enable_if<
         (utils::is_same_template<
-             core::extract_prototype<First>::template type,
-             core::extract_prototype<Last>::template type>::value &&
+             traits::extract_prototype<First>::template type,
+             traits::extract_prototype<Last>::template type>::value &&
          ...),
         extract_value_type_t<First>>::type;
   };

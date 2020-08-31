@@ -1,6 +1,8 @@
 #ifndef SMARTIT_ARRAY_HPP
 #define SMARTIT_ARRAY_HPP
 
+#include <array>
+
 #include "iterator.hpp"
 
 namespace smit {
@@ -35,12 +37,12 @@ namespace smit {
     // Auxiliar function to determine the array type
     template <size_t N, class... Types>
     constexpr auto _f_array_base(utils::types_holder<Types...>) {
-      return std::tuple<array_proxy_t<Types, N>...>{};
+      return utils::type_wrapper<std::tuple<array_proxy_t<Types, N>...>>{};
     }
 
     /// Container of the base type for array objects
     template <class H, size_t N> struct array_base {
-      using type = decltype(_f_array_base<N>(H{}));
+      using type = typename decltype(_f_array_base<N>(H{}))::type;
     };
 
     /// Base type for array objects

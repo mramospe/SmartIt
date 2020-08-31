@@ -4,6 +4,7 @@
 #include "array.hpp"
 #include "iterator.hpp"
 #include "test.hpp"
+#include "traits.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 #include "value.hpp"

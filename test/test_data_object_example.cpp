@@ -6,9 +6,9 @@ public:
   using T::T; // Inherit constructors
 
   auto &x() { return smit::get_field<0>(*this); }
-  auto const &x() const { return smit::get_field<0>(*this); }
-  auto &y() const { return smit::get_field<1>(*this); }
-  auto const &y() { return smit::get_field<1>(*this); }
+  auto const &x() const { return smit::get_field_const<0>(*this); }
+  auto &y() { return smit::get_field<1>(*this); }
+  auto const &y() const { return smit::get_field_const<1>(*this); }
 
   // Dot product as a member function
   template <class U> auto dot(const point_2d_proto<U> &other) const {

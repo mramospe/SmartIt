@@ -19,17 +19,17 @@ namespace smit {
     using T::T;
 
     /// X coordinate
-    const auto &x() const { return get_field<0>(*this); }
+    const auto &x() const { return get_field_const<0>(*this); }
     /// X coordinate
     auto &x() { return get_field<0>(*this); }
 
     /// Y coordinate
-    auto const &y() const { return get_field<1>(*this); }
+    auto const &y() const { return get_field_const<1>(*this); }
     /// Y coordinate
     auto &y() { return get_field<1>(*this); }
 
     /// Z coordinate
-    auto const &z() const { return get_field<2>(*this); }
+    auto const &z() const { return get_field_const<2>(*this); }
     /// Z coordinate
     auto &z() { return get_field<2>(*this); }
 
@@ -81,12 +81,12 @@ namespace smit {
     using T::T;
 
     /// Access the point
-    const auto &point() const { return get_field<0>(*this); }
+    const auto &point() const { return get_field_const<0>(*this); }
     /// Access the point
     auto &point() { return get_field<0>(*this); }
 
     /// Access the vector
-    const auto &vector() const { return get_field<1>(*this); }
+    const auto &vector() const { return get_field_const<1>(*this); }
     /// Access the vector
     auto &vector() { return get_field<1>(*this); }
   };

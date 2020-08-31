@@ -3,40 +3,29 @@
 
 #include <tuple>
 
+#include "traits.hpp"
 #include "value.hpp"
 
 namespace smit {
 
   namespace core {
-    template <template <class> class Proxy, class... Types>
-    constexpr auto _f_iterator_base(utils::types_holder<Types...>) {
-      return std::tuple<typename Proxy<Types>::iterator...>{};
-    }
 
-    template <template <class> class Proxy, class H> struct _s_iterator_base {
-      using type = decltype(_f_iterator_base<Proxy>(H{}));
-    };
-
-    /// Type of the iterator for the given container proxy and types holder
-    template <template <class> class Proxy, class H>
-    using iterator_base = typename _s_iterator_base<Proxy, H>::type;
-
-    /** Iterator type
-     *
+    /**
+     * @brief Iterator type
      */
     template <template <class> class Proxy, class Object>
     class __iterator
-        : public core::iterator_base<Proxy, typename Object::types> {
+        : public traits::iterator_base<Proxy, typename Object::types> {
 
     public:
       /// Base class
-      using base_class = core::iterator_base<Proxy, typename Object::types>;
-      /// Type of the container
-      using container_type =
-          __container_type<core::extract_prototype<Object>::template type,
-                           __iterator>;
-      using value_type = Object;
+      using base_class = traits::iterator_base<Proxy, typename Object::types>;
+      using iterator_types = decltype(
+          traits::_f_iterator_proxies<Proxy>(typename Object::types{}));
       using types = typename Object::types;
+      /// Type of the container
+      using value_type = core::__container_type<
+          traits::extract_prototype<Object>::template type, iterator_types>;
       /// Number of fields
       static const auto number_of_fields = Object::number_of_fields;
 
@@ -68,16 +57,16 @@ namespace smit {
       }
 
       /// Access operator
-      container_type *operator->() { return &m_container; }
+      value_type *operator->() { return &m_container; }
 
       /// Dereference operator
-      container_type &operator*() { return m_container; }
+      value_type &operator*() { return m_container; }
 
       /// Dereference operator (constant)
-      container_type const &operator*() const { return m_container; }
+      value_type const &operator*() const { return m_container; }
 
       /// Access operator
-      container_type const *operator->() const { return &m_container; }
+      value_type const *operator->() const { return &m_container; }
 
       /// Increment operator
       __iterator &operator++() {
@@ -141,7 +130,7 @@ namespace smit {
 
     protected:
       /// Container instance
-      container_type m_container;
+      value_type m_container;
 
     private:
       /// Implementation of the function to access the next element
