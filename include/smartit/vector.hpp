@@ -20,6 +20,7 @@ namespace smit {
         Type, typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
       using type = std::vector<Type>;
       using iterator = typename type::iterator;
+      using const_iterator = typename type::const_iterator;
     };
 
     template <class Type>
@@ -27,6 +28,7 @@ namespace smit {
         Type, typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
       using type = vector<Type>;
       using iterator = typename type::iterator;
+      using const_iterator = typename type::const_iterator;
     };
 
     template <class Type>
@@ -63,8 +65,10 @@ namespace smit {
   public:
     /// Base class
     using base_class = core::vector_base_t<typename Object::types>;
-    /// Similar to std::vector
+    /// Vector iterator
     using iterator = core::__iterator<core::vector_proxy, Object>;
+    /// Vector constant iterator
+    using const_iterator = core::__const_iterator<core::vector_proxy, Object>;
 
     /// Default constructor
     vector() {}
@@ -74,8 +78,44 @@ namespace smit {
     /// Destructor
     ~vector() {}
 
+    inline typename iterator::value_type &operator[](size_t i) {
+      return this->at(i);
+    }
+
+    inline typename iterator::value_type const &operator[](size_t i) const {
+      return this->at(i);
+    }
+
+    /// Returns a reference at position i in the vector
+    typename iterator::value_type &at(size_t i) {
+      return this->at_impl(
+          i, std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Returns a reference at position i in the vector (constant)
+    typename iterator::value_type const &at(size_t i) const {
+      return this->at_impl(
+          i, std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Test whether the vector is empty
+    inline bool empty() const { return this->size() == 0; }
+
+    /// Requests that the vector capacity of each field be at least enough to
+    /// contain n elements.
+    void reserve(size_t n) {
+      this->reserve_impl(n,
+                         std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Change size
+    void resize(size_t n) {
+      this->resize_impl(n,
+                        std::make_index_sequence<Object::number_of_fields>{});
+    }
+
     /// Get the size of the vector
-    size_t size() const {
+    inline size_t size() const {
 
       if constexpr (Object::number_of_fields == 0)
         return 0;
@@ -89,17 +129,62 @@ namespace smit {
           std::make_index_sequence<Object::number_of_fields>{});
     }
 
+    /// Begining of the vector (constant)
+    auto begin() const {
+      return this->cbegin_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Begining of the vector (constant)
+    auto cbegin() {
+      return this->cbegin_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
     /// End of the vector
     auto end() {
       return this->end_impl(
           std::make_index_sequence<Object::number_of_fields>{});
     }
 
+    /// End of the vector (constant)
+    auto end() const {
+      return this->cend_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// End of the vector (constant)
+    auto cend() {
+      return this->cend_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
   private:
+    /// Implementation of the at function
+    template <size_t... I>
+    typename iterator::value_type &at_impl(size_t i,
+                                           std::index_sequence<I...>) {
+      return *(this->begin() + i);
+    }
+
+    /// Implementation of the at function (constant)
+    template <size_t... I>
+    typename iterator::value_type const &
+    at_impl(size_t i, std::index_sequence<I...>) const {
+      return *(this->cbegin() + i);
+    }
+
     /// Implementation of the begin function
     template <size_t... I> iterator begin_impl(std::index_sequence<I...>) {
 
       return {std::begin(std::get<I>(*this))...};
+    };
+
+    /// Implementation of the cbegin function
+    template <size_t... I>
+    const_iterator cbegin_impl(std::index_sequence<I...>) const {
+
+      return {std::cbegin(std::get<I>(*this))...};
     };
 
     /// Implementation of the end function
@@ -107,6 +192,25 @@ namespace smit {
 
       return {std::end(std::get<I>(*this))...};
     };
+
+    /// Implementation of the cend function
+    template <size_t... I>
+    const_iterator cend_impl(std::index_sequence<I...>) const {
+
+      return {std::cend(std::get<I>(*this))...};
+    };
+
+    /// Implementation of the reserve function
+    template <size_t... I>
+    inline void reserve_impl(size_t n, std::index_sequence<I...>) {
+      (std::get<I>(*this).reserve(n), ...);
+    }
+
+    /// Implementation of the resize function
+    template <size_t... I>
+    inline void resize_impl(size_t n, std::index_sequence<I...>) {
+      (std::get<I>(*this).resize(n), ...);
+    }
   };
 } // namespace smit
 

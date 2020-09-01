@@ -64,11 +64,33 @@ namespace smit {
     using base_class = core::array_base_t<typename Object::types, N>;
     using iterator =
         core::__iterator<core::sized_array_proxy<N>::template type, Object>;
-
+    using const_iterator =
+        core::__const_iterator<core::sized_array_proxy<N>::template type,
+                               Object>;
     /// Default constructor
     array() : base_class{} {}
     /// Destructor
     ~array() {}
+
+    inline typename iterator::value_type &operator[](size_t i) {
+      return this->at(i);
+    }
+
+    inline typename iterator::value_type const &operator[](size_t i) const {
+      return this->at(i);
+    }
+
+    /// Returns a reference at position i in the vector
+    typename iterator::value_type &at(size_t i) {
+      return this->at_impl(
+          i, std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Returns a reference at position i in the vector (constant)
+    typename iterator::value_type const &at(size_t i) const {
+      return this->at_impl(
+          i, std::make_index_sequence<Object::number_of_fields>{});
+    }
 
     /// Get the size of the array
     size_t size() const {
@@ -85,23 +107,75 @@ namespace smit {
           std::make_index_sequence<Object::number_of_fields>{});
     }
 
+    /// Begining of the array (constant)
+    auto begin() const {
+      return this->cbegin_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// Begining of the array (constant)
+    auto cbegin() const {
+      return this->cbegin_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
     /// End of the array
     auto end() {
       return this->end_impl(
           std::make_index_sequence<Object::number_of_fields>{});
     }
 
+    /// End of the array (constant)
+    auto end() const {
+      return this->cend_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
+    /// End of the array (constant)
+    auto cend() const {
+      return this->cend_impl(
+          std::make_index_sequence<Object::number_of_fields>{});
+    }
+
   private:
+    /// Implementation of the at function
+    template <size_t... I>
+    typename iterator::value_type &at_impl(size_t i,
+                                           std::index_sequence<I...>) {
+      return *(this->begin() + i);
+    }
+
+    /// Implementation of the at function (constant)
+    template <size_t... I>
+    typename iterator::value_type const &
+    at_impl(size_t i, std::index_sequence<I...>) const {
+      return *(this->cbegin() + i);
+    }
+
     /// Implementation of the begining function
     template <size_t... I> iterator begin_impl(std::index_sequence<I...>) {
 
       return {std::begin(std::get<I>(*this))...};
     };
 
+    /// Implementation of the begining function (constant)
+    template <size_t... I>
+    const_iterator cbegin_impl(std::index_sequence<I...>) const {
+
+      return {std::cbegin(std::get<I>(*this))...};
+    };
+
     /// Implementation of the end function
     template <size_t... I> iterator end_impl(std::index_sequence<I...>) {
 
       return {std::end(std::get<I>(*this))...};
+    };
+
+    /// Implementation of the end function (constant)
+    template <size_t... I>
+    const_iterator cend_impl(std::index_sequence<I...>) const {
+
+      return {std::cend(std::get<I>(*this))...};
     };
   };
 } // namespace smit

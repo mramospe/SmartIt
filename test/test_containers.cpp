@@ -3,11 +3,10 @@
 #include "smartit/types.hpp"
 #include "smartit/vector.hpp"
 
-template <typename Type> void test_array() {
+template <class Type, class Container>
+void test_container(Container &a, size_t initial_size) {
 
-  smit::array<smit::test::single_value<Type>, 10> a;
-
-  SMARTIT_TEST_ASSERT(a.size, 10);
+  SMARTIT_TEST_ASSERT(a.size, initial_size);
 
   smit::test::single_value<Type> v{0};
 
@@ -16,21 +15,39 @@ template <typename Type> void test_array() {
 
   for (auto it = a.begin(); it != a.end(); ++it)
     SMARTIT_TEST_ASSERT(it->value, 0);
+
+  for (auto it = a.cbegin(); it != a.cend(); ++it)
+    SMARTIT_TEST_ASSERT(it->value, 0);
+
+  SMARTIT_TEST_ASSERT(a.begin, a.begin());
+
+  auto distance = [&a]() { return a.begin() - a.begin(); };
+
+  SMARTIT_TEST_ASSERT(distance, 0);
+
+  a.at(0);
+
+  a[0];
+}
+
+template <typename Type> void test_array() {
+
+  smit::array<smit::test::single_value<Type>, 10> a;
+
+  test_container<Type>(a, 10);
 }
 
 template <typename Type> void test_vector() {
 
   smit::vector<smit::test::single_value<Type>> a(10);
 
-  SMARTIT_TEST_ASSERT(a.size, 10);
+  test_container<Type>(a, 10);
 
-  smit::test::single_value<Type> v{0};
+  a.resize(20);
+  SMARTIT_TEST_ASSERT(a.size, 20);
 
-  for (auto it = a.begin(); it != a.end(); ++it)
-    it->value() = v.value();
-
-  for (auto it = a.begin(); it != a.end(); ++it)
-    SMARTIT_TEST_ASSERT(it->value, 0);
+  a.reserve(40);
+  SMARTIT_TEST_ASSERT(a.size, 20);
 }
 
 int main() {
