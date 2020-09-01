@@ -2,6 +2,12 @@
 SmartIt
 =======
 
+.. image:: https://travis-ci.org/mramospe/SmartIt.svg?branch=master
+   :target: https://travis-ci.org/mramospe/SmartIt
+
+.. image:: https://img.shields.io/badge/documentation-link-blue.svg
+   :target: https://mramospe.github.io/SmartIt/
+
 This package provides a way to define data objects based on a C++ tuple structure, so Struct-Of-Arrays (SOA) instances can be easily constructed.
 Users only need to declare a prototype class and a set of functions and member functions acting on it.
 SmartIt will declare the apropriate value and container types, in such a way that operations between vector or array iterators with value types can be done without needing to duplicate code.
