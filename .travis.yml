@@ -1,0 +1,35 @@
+compiler:
+  - gcc
+  - clang
+
+before_install:
+  - g++ --version
+  - eval "${MATRIX_EVAL}"
+
+install:
+  - mkdir build
+  - cd build
+  - cmake ../smartit -DINSTALL_TESTS=ON
+  - make
+
+script:
+  - ./test/test_types
+  - ./test/test_containers
+  - ./test/test_timing
+  - ./test/test_data_object_example
+
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew install gcc && CC=gcc-7 && CXX=g++-7"
