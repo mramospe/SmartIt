@@ -3,7 +3,6 @@ compiler:
   - clang
 
 before_install:
-  - g++ --version
   - eval "${MATRIX_EVAL}"
 
 install:
