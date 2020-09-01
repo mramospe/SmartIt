@@ -3,6 +3,7 @@ project("SmartIt" VERSION 0.0.0
 DESCRIPTION "A header only c++ library that provides an easy way to work with value types and iterators in a struct-of-arrays paradigm")
 
 option(INSTALL_TESTS "Whether to install the test scripts or not" OFF)
+option(INSTALL_TIMING_SCRIPTS "Whether to install the timing scripts or not" OFF)
 
 #
 # Installation of the library
@@ -64,3 +65,26 @@ if(INSTALL_TESTS)
       set_target_properties(${testname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
     endforeach(testsourcefile ${TEST_SOURCES})
 endif(INSTALL_TESTS)
+
+#
+# Installation of the timing scripts
+#
+if(INSTALL_TIMING_SCRIPTS)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/timing)
+
+    include_directories(include)
+    file(GLOB TIMING_SOURCES ${PROJECT_SOURCE_DIR}/timing/*.cpp)
+    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
+    foreach(timingsourcefile ${TIMING_SOURCES})
+      get_filename_component(timingname ${timingsourcefile} NAME_WE)
+      add_executable(${timingname} ${timingsourcefile})
+      set_target_properties(${timingname} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/timing CXX_STANDARD 17 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+    endforeach(timingsourcefile ${TIMING_SOURCES})
+
+    file(GLOB TIMING_PY_SOURCES ${PROJECT_SOURCE_DIR}/timing/*.py)
+    foreach(timingsourcefile ${TIMING_PY_SOURCES})
+      get_filename_component(timingname ${timingsourcefile} NAME_WE)
+      configure_file(${timingsourcefile} ${CMAKE_BINARY_DIR}/timing/${timingname} COPYONLY)
+    endforeach(timingsourcefile ${TIMING_PY_SOURCES})
+endif(INSTALL_TIMING_SCRIPTS)
