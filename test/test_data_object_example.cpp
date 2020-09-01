@@ -37,9 +37,9 @@ int main() {
   point_2d<double> a{1, 1};
   point_2d<double> b{1, 0};
 
-  auto d = dot(a, b);
+  dot(a, b);
 
-  auto u = unit(a);
+  unit(a);
 
   return 0;
 }

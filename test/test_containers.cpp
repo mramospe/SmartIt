@@ -45,5 +45,5 @@ int main() {
   SMARTIT_TEST_SCOPE_FUNCTION(vcoll, &test_vector<float>);
   SMARTIT_TEST_SCOPE_FUNCTION(vcoll, &test_vector<double>);
 
-  return vcoll.status() || vcoll.status();
+  return smit::test::combined_status(vcoll.status(), vcoll.status());
 }

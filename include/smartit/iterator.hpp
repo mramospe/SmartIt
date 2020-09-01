@@ -134,13 +134,15 @@ namespace smit {
 
     private:
       /// Implementation of the function to access the next element
-      template <size_t... I> inline void next_impl(std::index_sequence<I...>) {
+      template <size_t... I>
+      constexpr void next_impl(std::index_sequence<I...>) {
 
         (++std::get<I>(*this), ...);
       }
 
       /// Implementation of the function to access the previous element
-      template <size_t... I> inline void prev_impl(std::index_sequence<I...>) {
+      template <size_t... I>
+      constexpr void prev_impl(std::index_sequence<I...>) {
 
         (--std::get<I>(*this), ...);
       }

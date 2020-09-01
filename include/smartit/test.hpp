@@ -11,14 +11,20 @@ namespace smit {
 
   namespace test {
 
-    /** Class to collect test results and display them on error
-     *
+    /// Get the combined status for different collectors
+    template <class... Status> bool combined_status(Status... s) {
+      return (s || ...);
+    }
+
+    /**
+     * @brief Class to collect test results and display them on error
      */
     class test_collector {
 
     public:
+      /// Construct the class from the collector's name
       test_collector(const char *name) : m_name{name} {};
-
+      /// On destruction, the collector displays the errors
       ~test_collector() {
 
         if (status()) {
@@ -29,8 +35,10 @@ namespace smit {
         }
       }
 
+      /// Status code of the collector
       bool status() const { return m_errors.size() != 0; }
 
+      /// Call a function and check whether it throws and exception or not
       template <class Function, class... Args>
       void test_scope_function(const char *f, Function F,
                                const Args &... args) {
@@ -45,9 +53,10 @@ namespace smit {
       }
 
     protected:
-      const char *m_name;
+      const char *m_name; //!< Name of the collector
 
-      std::vector<std::pair<const char *, const char *>> m_errors;
+      std::vector<std::pair<const char *, const char *>>
+          m_errors; //!< Container for the error messages
     };
 
 // Definition of the "assert" function for the tests
@@ -61,36 +70,44 @@ namespace smit {
 #define SMARTIT_TEST_SCOPE_FUNCTION(coll, F, ...)                              \
   coll.test_scope_function(#F, F, ##__VA_ARGS__);
 
-    /** Simple data object with a single value
-     *
+    /**
+     * @brief Simple data object prototype with a single value
      */
     template <class T> class single_value_proto : public T {
 
     public:
       using T::T;
 
+      /// Access the value
       auto &value() { return get_field<0>(*this); }
+      /// Access the value
       auto const &value() const { return get_field_const<0>(*this); }
     };
 
+    /// Simple data object with a single value
     template <typename Type>
     using single_value = data_object<single_value_proto, Type>;
 
-    /** Data object composed by another two
-     *
+    /**
+     * @brief Data object prototype composed by another two
      */
     template <class T> class two_single_values_proto : public T {
 
     public:
       using T::T;
 
+      /// Access the first element
       auto &first() { return get_field<0>(*this); }
+      /// Access the first element
       auto const &first() const { return get_field_const<0>(*this); }
 
+      /// Access the second element
       auto &second() { return get_field<1>(*this); }
+      /// Access the second element
       auto const &second() const { return get_field_const<1>(*this); }
     };
 
+    /// Simple data object with two single values
     template <typename Type>
     using two_single_values =
         data_object<two_single_values_proto, single_value<Type>,
