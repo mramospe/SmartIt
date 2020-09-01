@@ -6,7 +6,8 @@ This package provides a way to define data objects based on a C++ tuple structur
 Users only need to declare a prototype class and a set of functions and member functions acting on it.
 SmartIt will declare the apropriate value and container types, in such a way that operations between vector or array iterators with value types can be done without needing to duplicate code.
 
-.. code-block:: c++
+.. code-block:: cpp
+
     #include "smartit/all.hpp"
 
     template <class T> class point_2d_proto : public T {
