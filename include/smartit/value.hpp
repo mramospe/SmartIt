@@ -13,16 +13,16 @@ namespace smit {
     /**
      * @brief Base class to store a value type
      */
-    template <class... Types>
-    class __base_value_type : public std::tuple<Types...> {
+    template <class... Fields>
+    class __base_value_type : public std::tuple<Fields...> {
 
     public:
-      using types = utils::types_holder<Types...>;
+      using types = utils::types_holder<Fields...>;
 
-      static const auto number_of_fields = sizeof...(Types);
+      static const auto number_of_fields = sizeof...(Fields);
 
       /// Inherit constructors
-      using std::tuple<Types...>::tuple;
+      using std::tuple<Fields...>::tuple;
     };
 
     /**
@@ -48,7 +48,7 @@ namespace smit {
    * methods to extract all the fields of the object through the smit::get_field
    * function. Template functions can be later defined, taking two template
    * arguments as an input. The return type can be obtained using the
-   * smit::common_value_type_t structure. The types of the fields are determined
+   * smit::build_value_type_t structure. The types of the fields are determined
    * with the following template arguments, and can be data objects too. An
    * example of a data object would be:
    *
@@ -100,13 +100,13 @@ namespace smit {
      }
    * \endcode
    *
-   * @see smit::common_value_type
-   * @see smit::common_value_type_t
+   * @see smit::build_value_type
+   * @see smit::build_value_type_t
    * @see smit::get_field
    *
    */
-  template <template <class> class Prototype, class... Types>
-  using data_object = Prototype<core::__base_value_type<Types...>>;
+  template <template <class> class Prototype, class... Fields>
+  using data_object = Prototype<core::__base_value_type<Fields...>>;
 
   namespace core {
 
@@ -127,21 +127,21 @@ namespace smit {
     }
   } // namespace core
 
-  /// Function to access a field of an object based on std::tuple
-  template <size_t I, class... Types>
-  inline utils::tuple_element_t<I, Types...> &
-  get_field(core::__base_value_type<Types...> &obj) {
+  /// Access a field of an object based on std::tuple
+  template <size_t I, class... Fields>
+  inline utils::tuple_element_t<I, Fields...> &
+  get_field(core::__base_value_type<Fields...> &obj) {
     return std::get<I>(obj);
   }
 
-  /// Function to access a field of an object based on std::tuple
-  template <size_t I, class... Types>
-  inline utils::tuple_element_t<I, Types...> const &
-  get_field_const(core::__base_value_type<Types...> const &obj) {
+  /// Access a field of an object based on std::tuple
+  template <size_t I, class... Fields>
+  inline utils::tuple_element_t<I, Fields...> const &
+  get_field_const(core::__base_value_type<Fields...> const &obj) {
     return std::get<I>(obj);
   }
 
-  /// Function to access a field of an object based on std::tuple
+  /// Access a field of an object based on std::tuple
   template <size_t I, class... Iterators>
   inline typename std::iterator_traits<
       utils::tuple_element_t<I, Iterators...>>::value_type &
@@ -149,7 +149,7 @@ namespace smit {
     return *std::get<I>(obj);
   }
 
-  /// Function to access a field of an object based on std::tuple
+  /// Access a field of an object based on std::tuple
   template <size_t I, class... Iterators>
   inline typename std::iterator_traits<
       utils::tuple_element_t<I, Iterators...>>::value_type const &
