@@ -8,73 +8,85 @@
 namespace smit {
 
   // Forward declaration of the vector class
-  template <class Object> class vector;
+  template <class Object, template <class> class Alloc> class vector;
   namespace core {
 
     /// Proxy for a vector, storing its type and iterator
-    template <class Type, class Enable = void>
+    template <class Type, template <class> class Alloc, class Enable = void>
     struct vector_proxy {}; // primary template
 
-    template <class Type>
+    template <class Type, template <class> class Alloc>
     struct vector_proxy<
-        Type, typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
-      using type = std::vector<Type>;
+        Type, Alloc,
+        typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
+      using type = std::vector<Type, Alloc<Type>>;
       using iterator = typename type::iterator;
       using const_iterator = typename type::const_iterator;
     };
 
-    template <class Type>
+    template <class Type, template <class> class Alloc>
     struct vector_proxy<
-        Type, typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
-      using type = vector<Type>;
+        Type, Alloc,
+        typename std::enable_if<!std::is_arithmetic<Type>::value>::type> {
+      using type = vector<Type, Alloc>;
       using iterator = typename type::iterator;
       using const_iterator = typename type::const_iterator;
     };
 
-    template <class Type>
-    using vector_proxy_t = typename vector_proxy<Type>::type;
+    template <class Type, template <class> class Alloc>
+    using vector_proxy_t = typename vector_proxy<Type, Alloc>::type;
 
     // Auxiliar function to determine the vector type
-    template <class... Types>
+    template <template <class> class Alloc, class... Types>
     constexpr auto _f_vector_base(utils::types_holder<Types...>) {
-      return std::tuple<vector_proxy_t<Types>...>{};
+      return std::tuple<vector_proxy_t<Types, Alloc>...>{};
     }
 
     /// Container of the base type for vector objects
-    template <class H> struct vector_base {
-      using type = decltype(_f_vector_base(H{}));
+    template <class H, template <class> class Alloc> struct vector_base {
+      using type = decltype(_f_vector_base<Alloc>(H{}));
     };
 
     /// Base type for vector objects
-    template <class H> using vector_base_t = typename vector_base<H>::type;
+    template <class H, template <class> class Alloc>
+    using vector_base_t = typename vector_base<H, Alloc>::type;
+
+    template <template <class> class Alloc> struct alloc_vector_proxy {
+      template <class Type> using type = vector_proxy_t<Type, Alloc>;
+    };
 
     /// Create a tuple of vectors with the given size
-    template <class... Types>
-    constexpr std::tuple<vector_proxy_t<Types>...>
+    template <template <class> class Alloc, class... Types>
+    constexpr std::tuple<vector_proxy_t<Types, Alloc>...>
     make_vector_tuple(size_t n, utils::types_holder<Types...>) {
-      return {vector_proxy_t<Types>(n)...};
+      return {vector_proxy_t<Types, Alloc>(n)...};
     }
   } // namespace core
 
   /**
    * @brief Definition of a vector based on the std::vector class
    */
-  template <class Object>
-  class vector : public core::vector_base_t<typename Object::types> {
+  template <class Object, template <class> class Alloc = std::allocator>
+  class vector : public core::vector_base_t<typename Object::types, Alloc> {
 
   public:
     /// Base class
-    using base_class = core::vector_base_t<typename Object::types>;
+    using base_class = core::vector_base_t<typename Object::types, Alloc>;
     /// Vector iterator
-    using iterator = core::__iterator<core::vector_proxy, Object>;
+    using iterator =
+        core::__iterator<core::alloc_vector_proxy<Alloc>::template type,
+                         Object>;
     /// Vector constant iterator
-    using const_iterator = core::__const_iterator<core::vector_proxy, Object>;
+    using const_iterator =
+        core::__const_iterator<core::alloc_vector_proxy<Alloc>::template type,
+                               Object>;
 
     /// Default constructor
     vector() {}
     /// Construct the vector from a size
     vector(size_t n)
-        : base_class{core::make_vector_tuple(n, typename Object::types{})} {};
+        : base_class{
+              core::make_vector_tuple<Alloc>(n, typename Object::types{})} {};
     /// Destructor
     ~vector() {}
 
