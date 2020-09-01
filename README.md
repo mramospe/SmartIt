@@ -1,18 +1,14 @@
-=======
-SmartIt
-=======
+# SmartIt
 
-.. image:: https://travis-ci.org/mramospe/SmartIt.svg?branch=master
-   :target: https://travis-ci.org/mramospe/SmartIt
+[![Build Status](https://travis-ci.org/mramospe/SmartIt.svg?branch=master)](https://travis-ci.org/mramospe/SmartIt)
 
-.. image:: https://img.shields.io/badge/documentation-link-blue.svg
-   :target: https://mramospe.github.io/SmartIt/
+[![Documentation](https://img.shields.io/badge/documentation-link-blue.svg)](https://mramospe.github.io/SmartIt)
 
 This package provides a way to define data objects based on a C++ tuple structure, so Struct-Of-Arrays (SOA) instances can be easily constructed.
 Users only need to declare a prototype class and a set of functions and member functions acting on it.
 SmartIt will declare the apropriate value and container types, in such a way that operations between vector or array iterators with value types can be done without needing to duplicate code.
 
-.. code-block:: cpp
+```cpp
 
     #include "smartit/all.hpp"
 
@@ -59,16 +55,17 @@ SmartIt will declare the apropriate value and container types, in such a way tha
 
      return 0;
     }
+```
 
-The package is provided as a header-only C++ library, and can be installed using `CMake <https://cmake.org/>`_.
+The package is provided as a header-only C++ library, and can be installed using [CMake](https://cmake.org).
 To install it simply do:
 
-.. code-block:: bash
-
+```bash
    git clone git@github.com:mramospe/SmartIt.git smartit
    mkdir smartit-build
    cd smartit-build
    cmake .. -DINSTALL_TESTS=ON
    make
+```
 
 If you just want to use the headers without installation, add *smartit/include* path to your set of include directories.
