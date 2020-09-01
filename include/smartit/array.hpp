@@ -76,7 +76,7 @@ namespace smit {
       if constexpr (Object::number_of_fields == 0)
         return 0;
       else
-        return std::get<0>(*this).size();
+        return N;
     }
 
     /// Begining of the array

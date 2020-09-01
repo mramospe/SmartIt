@@ -37,7 +37,9 @@ namespace smit {
 
         try {
           F(args...);
+          std::cout << "\"" << f << "\" (success)" << std::endl;
         } catch (const char *e) {
+          std::cerr << "\"" << f << "\" (error)" << std::endl;
           m_errors.emplace_back(f, e);
         }
       }

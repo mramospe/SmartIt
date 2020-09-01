@@ -53,53 +53,51 @@ namespace smit {
    * example of a data object would be:
    *
    * \code{.cpp}
-   #include "smartit/all.hpp"
+     #include "smartit/all.hpp"
 
-   template <class T> class point_2d_proto : public T {
+     template <class T> class point_2d_proto : public T {
 
-   public:
-     using T::T; // Inherit constructors
+     public:
+       using T::T; // Inherit constructors
 
-     auto &x() { return smit::get_field<0>(*this); }
-     auto const &x() const { return smit::get_field<0>(*this); }
-     auto &y() const { return smit::get_field<1>(*this); }
-     auto const &y() { return smit::get_field<1>(*this); }
+       auto &x() { return smit::get_field<0>(*this); }
+       auto const &x() const { return smit::get_field_const<0>(*this); }
+       auto &y() { return smit::get_field<1>(*this); }
+       auto const &y() const { return smit::get_field_const<1>(*this); }
 
-     // Dot product as a member function
-     template<class U>
-     auto dot(const point_2d_proto<U> &other) const {
-       return this->x() * other.x() + this->y() * other.y();
+       // Dot product as a member function
+       template <class U> auto dot(const point_2d_proto<U> &other) const {
+         return this->x() * other.x() + this->y() * other.y();
+       }
+     };
+
+     // Define our new data object
+     template <typename Type>
+     using point_2d = smit::data_object<point_2d_proto, Type, Type>;
+
+     // Dot product as an external function
+     template <class T1, class T2>
+      auto dot(const point_2d_proto<T1> &a, const point_2d_proto<T2> &b) {
+       return a.x() * b.x() + a.y() * b.y();
      }
-   };
 
-   // Define our new data object
-   template <typename Type>
-   using point_2d = smit::data_object<point_2d_proto, Type, Type>;
+     // Unitary vector as an external function
+     template <class T> smit::extract_value_type_t<T> unit(const T &a) {
+       auto const m = std::sqrt(a.x() * a.x() + a.y() * a.y());
+       return {a.x() / m, a.y() / m};
+     }
 
-   // Dot product as an external function
-   //template <class T1, class T2>
-   //auto dot(const point_2d_proto<T1> &a, const point_2d_proto<T2> &b) {
-   //  return a.x() * b.x() + a.y() * b.y();
-   //}
+     int main() {
 
-   // Unitary vector as an external function
-   template <class T> smit::extract_value_type_t<T> unit(const point_2d_proto<T>
-   &a) { auto const m = std::sqrt(a.x() * a.x() + a.y() * a.y()); return {a.x()
-   / m, a.y() / m};
-   }
+       point_2d<double> a{1, 1};
+       point_2d<double> b{1, 0};
 
+       auto d = dot(a, b);
 
-   int main() {
+       auto u = unit(a);
 
-     point_2d<double> a{1, 1};
-     point_2d<double> b{1, 0};
-
-     //auto c = dot(a, b);
-
-     auto c = unit(a);
-
-     return 0;
-   }
+       return 0;
+     }
    * \endcode
    *
    * @see smit::common_value_type
@@ -145,14 +143,16 @@ namespace smit {
 
   /// Function to access a field of an object based on std::tuple
   template <size_t I, class... Iterators>
-  inline typename utils::tuple_element_t<I, Iterators...>::value_type &
+  inline typename std::iterator_traits<
+      utils::tuple_element_t<I, Iterators...>>::value_type &
   get_field(core::__base_container_type<Iterators...> &obj) {
     return *std::get<I>(obj);
   }
 
   /// Function to access a field of an object based on std::tuple
   template <size_t I, class... Iterators>
-  inline typename utils::tuple_element_t<I, Iterators...>::value_type const &
+  inline typename std::iterator_traits<
+      utils::tuple_element_t<I, Iterators...>>::value_type const &
   get_field_const(core::__base_container_type<Iterators...> const &obj) {
     return *std::get<I>(obj);
   }

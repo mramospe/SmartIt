@@ -21,10 +21,10 @@ template <typename Type>
 using point_2d = smit::data_object<point_2d_proto, Type, Type>;
 
 // Dot product as an external function
-// template <class T1, class T2>
-// auto dot(const point_2d_proto<T1> &a, const point_2d_proto<T2> &b) {
-//  return a.x() * b.x() + a.y() * b.y();
-//}
+template <class T1, class T2>
+auto dot(const point_2d_proto<T1> &a, const point_2d_proto<T2> &b) {
+  return a.x() * b.x() + a.y() * b.y();
+}
 
 // Unitary vector as an external function
 template <class T> smit::extract_value_type_t<T> unit(const T &a) {
@@ -37,9 +37,9 @@ int main() {
   point_2d<double> a{1, 1};
   point_2d<double> b{1, 0};
 
-  // auto c = dot(a, b);
+  auto d = dot(a, b);
 
-  auto c = unit(a);
+  auto u = unit(a);
 
   return 0;
 }

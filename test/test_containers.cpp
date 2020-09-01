@@ -7,6 +7,8 @@ template <typename Type> void test_array() {
 
   smit::array<smit::test::single_value<Type>, 10> a;
 
+  SMARTIT_TEST_ASSERT(a.size, 10);
+
   smit::test::single_value<Type> v{0};
 
   for (auto it = a.begin(); it != a.end(); ++it)
@@ -19,6 +21,8 @@ template <typename Type> void test_array() {
 template <typename Type> void test_vector() {
 
   smit::vector<smit::test::single_value<Type>> a(10);
+
+  SMARTIT_TEST_ASSERT(a.size, 10);
 
   smit::test::single_value<Type> v{0};
 
