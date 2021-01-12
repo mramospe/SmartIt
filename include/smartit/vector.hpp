@@ -20,8 +20,6 @@ namespace smit {
         Type, Alloc,
         typename std::enable_if<std::is_arithmetic<Type>::value>::type> {
       using type = std::vector<Type, Alloc<Type>>;
-      using iterator = typename type::iterator;
-      using const_iterator = typename type::const_iterator;
     };
 
     template <class Type, template <class> class Alloc>
