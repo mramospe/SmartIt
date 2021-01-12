@@ -43,6 +43,9 @@ namespace smit {
       void test_scope_function(const char *f, Function F,
                                const Args &... args) {
 
+        std::cout << "Within the context of test collector \"" << m_name << "\""
+                  << std::endl;
+
         try {
           F(args...);
           std::cout << "\"" << f << "\" (success)" << std::endl;
