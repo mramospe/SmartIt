@@ -149,9 +149,9 @@ template <class Type> void test_timing(std::string const &name) {
 
 int main() {
 
-  test_timing<smit::point_3d<float>>("point3d");
+  test_timing<smit::point_3d<float>>("point-3d");
   test_timing<smit::test::two_single_values<float>>("two-single-values");
-  test_timing<smit::test::position_and_vector<float>>("position-and-vector");
+  test_timing<smit::point_with_vector_3d<float>>("point-with-vector-3d");
 
   return 0;
 }

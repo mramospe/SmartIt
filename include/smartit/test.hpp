@@ -119,30 +119,6 @@ namespace smit {
     using two_single_values =
         data_object<two_single_values_proto, single_value<Type>,
                     single_value<Type>>;
-
-    /**
-     * @brief Data object prototype composed by two sets of coordinates
-     */
-    template <class T> class position_and_vector_proto : public T {
-
-    public:
-      using T::T;
-
-      /// Access the position
-      auto &position() { return get_field<0>(*this); }
-      /// Access the position
-      auto const &position() const { return get_field_const<0>(*this); }
-
-      /// Access the vector
-      auto &vector() { return get_field<1>(*this); }
-      /// Access the vector
-      auto const &vector() const { return get_field_const<1>(*this); }
-    };
-
-    /// Simple data object with two single values
-    template <typename Type>
-    using position_and_vector =
-        data_object<position_and_vector_proto, point_3d<Type>, point_3d<Type>>;
   } // namespace test
 } // namespace smit
 
