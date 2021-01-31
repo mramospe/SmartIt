@@ -50,6 +50,7 @@ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/smartit DESTINATION ${PROJECT_BINARY_DIR}/include)
 
+
 #
 # Installation of the test scripts
 #
@@ -57,7 +58,7 @@ if(INSTALL_TESTS)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test)
     include_directories(include)
     file(GLOB TEST_SOURCES ${PROJECT_SOURCE_DIR}/test/*.cpp)
-    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -msse")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
     foreach(testsourcefile ${TEST_SOURCES})
       get_filename_component(testname ${testsourcefile} NAME_WE)
@@ -74,7 +75,7 @@ if(INSTALL_TIMING_SCRIPTS)
 
     include_directories(include)
     file(GLOB TIMING_SOURCES ${PROJECT_SOURCE_DIR}/timing/*.cpp)
-    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra")
+    set(CMAKE_CXX_FLAGS "-O3 -Wall -Wextra -msse")
     set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wextra")
     foreach(timingsourcefile ${TIMING_SOURCES})
       get_filename_component(timingname ${timingsourcefile} NAME_WE)
