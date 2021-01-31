@@ -66,7 +66,7 @@ template <class Type, class Action, size_t N, size_t R> void test_array() {
 
 template <class Type, class Action, size_t N, size_t R> void test_vector() {
 
-  std::cout << "Start measuring time for " << N << " entries and " << R
+  std::cout << "Measuring time for " << N << " entries and " << R
             << " repetitions" << std::endl;
 
   const auto start_std = std::chrono::high_resolution_clock::now();
@@ -104,54 +104,53 @@ template <class Type, class Action, size_t N, size_t R> void test_vector() {
             << smit_t * 1. / std_t << std::endl;
 }
 
-template <class Type> void test_timing(std::string const &name) {
-
-  smit::test::test_collector coll_iterate(std::string{"iterate-"} + name);
-
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_vector<Type, iterate, 100, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_vector<Type, iterate, 1000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_vector<Type, iterate, 10000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_vector<Type, iterate, 100000, 10000>));
-
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_array<Type, iterate, 1000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_array<Type, iterate, 10000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_array<Type, iterate, 100000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,
-                              (&test_array<Type, iterate, 1000000, 10000>));
-
-  smit::test::test_collector coll_reset(std::string{"reset-"} + name);
-
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_vector<Type, reset, 100, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_vector<Type, reset, 1000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_vector<Type, reset, 10000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_vector<Type, reset, 100000, 10000>));
-
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_array<Type, reset, 1000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_array<Type, reset, 10000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_array<Type, reset, 100000, 10000>));
-  SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,
-                              (&test_array<Type, reset, 1000000, 10000>));
-}
+#define test_timing(type, name)                                                \
+  {                                                                            \
+    smit::test::test_collector coll_iterate(std::string{"iterate-"} + #name);  \
+                                                                               \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_vector<type, iterate, 10, 10000>));     \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_vector<type, iterate, 100, 10000>));    \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_vector<type, iterate, 1000, 10000>));   \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_vector<type, iterate, 10000, 10000>));  \
+                                                                               \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_array<type, iterate, 10, 10000>));      \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_array<type, iterate, 100, 10000>));     \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_array<type, iterate, 1000, 10000>));    \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_iterate,                                  \
+                                (&test_array<type, iterate, 10000, 10000>));   \
+                                                                               \
+    smit::test::test_collector coll_reset(std::string{"reset-"} + #name);      \
+                                                                               \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_vector<type, reset, 10, 10000>));       \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_vector<type, reset, 100, 10000>));      \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_vector<type, reset, 1000, 10000>));     \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_vector<type, reset, 10000, 10000>));    \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_array<type, reset, 10, 10000>));        \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_array<type, reset, 100, 10000>));       \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_array<type, reset, 1000, 10000>));      \
+    SMARTIT_TEST_SCOPE_FUNCTION(coll_reset,                                    \
+                                (&test_array<type, reset, 10000, 10000>));     \
+  }
 
 int main() {
 
-  test_timing<smit::point_3d<float>>("point-3d");
-  test_timing<smit::test::two_single_values<float>>("two-single-values");
-  test_timing<smit::point_with_vector_3d<float>>("point-with-vector-3d");
+  test_timing(smit::point_3d<float>, point_3d);
+  test_timing(smit::test::two_single_values<float>, two_single_values);
+  test_timing(smit::point_with_vector_3d<float>, point_with_vector_3d);
 
   return 0;
 }
